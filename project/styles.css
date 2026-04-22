@@ -297,8 +297,10 @@ html { background: var(--bg); }
   display: block;
   font-family: var(--mono);
   font-weight: 400;
+  font-size: clamp(26px, 3.5vw, 52px);
   letter-spacing: -0.02em;
-  color: var(--ink);
+  color: var(--rose);
+  white-space: nowrap;
 }
 
 .hero-sub {
