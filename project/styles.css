@@ -457,7 +457,9 @@ html { background: var(--bg); }
 .cloud-wrap {
   position: relative;
   min-height: 720px;
-  width: 100%;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
   display: flex;
   align-items: center;
   justify-content: center;

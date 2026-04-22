@@ -192,6 +192,9 @@
         twistFreq: rand(0.008, 0.020),
         twistPhase: Math.random() * Math.PI * 2,
         twistSlot: Math.random() * Math.PI * 2,
+        // Hover wave (gentle per-strand oscillation)
+        waveSpeed: rand(-0.25, 0.25),
+        wavePhase: Math.random() * Math.PI * 2,
         twistSpeed: rand(0.04, 0.10) * (Math.random() < 0.5 ? -1 : 1),
         // Curl noise offset so each particle samples a different slice
         noiseOffset: Math.random() * 1000,
@@ -224,7 +227,7 @@
         r: big ? rand(2.8, 5.0) : rand(1.0, 2.2),
         phase: Math.random() * Math.PI * 2,
         freq: rand(0.3, 0.9),
-        amp: rand(1.8, 4.0),
+        amp: rand(3.5, 8.0),
         hue: cool ? HUE_COOL + (Math.random() - 0.5) * 6 : HUE_WARM + (Math.random() - 0.5) * 10,
         light: rand(big ? 58 : 62, 72),
         solid: big,
@@ -252,7 +255,7 @@
         r: rand(0.8, 1.8),
         phase: Math.random() * Math.PI * 2,
         freq: rand(0.4, 1.0),
-        amp: rand(1.5, 3.5),
+        amp: rand(3.0, 7.0),
         hue: cool ? HUE_COOL + (Math.random() - 0.5) * 5 : HUE_WARM + (Math.random() - 0.5) * 9,
         light: rand(55, 72),
       });
@@ -323,7 +326,16 @@
       const yJitter = cy * p.noiseAmp * (0.15 + pinch * 1.4);
       const xJitter = cx * p.noiseAmp * 0.5 * (0.08 + pinch);
 
-      return { x: x + xJitter, y: baseY + ropeY + yJitter, pinch };
+      // Hover wave — a slow, small vertical oscillation along each strand so
+      // the lines appear to breathe in place. Phase varies by particle + x so
+      // adjacent strands don't move in lockstep. Amplitude is gentle across
+      // the full strand (larger near tips where strands are free).
+      const waveAmp = 2.0 + 3.5 * absXn;          // px, grows toward tips
+      const wave = Math.sin(
+        t * (0.6 + p.waveSpeed) + p.wavePhase + x * 0.006
+      ) * waveAmp;
+
+      return { x: x + xJitter, y: baseY + ropeY + yJitter + wave, pinch };
     }
 
     // Render one particle's trail via many short additive line segments.
