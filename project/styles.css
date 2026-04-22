@@ -293,6 +293,13 @@ html { background: var(--bg); }
   display: block;
   color: var(--ink);
 }
+.hero h1 .h1-terminal {
+  display: block;
+  font-family: var(--mono);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
 
 .hero-sub {
   max-width: 440px;
