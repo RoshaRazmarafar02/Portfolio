@@ -472,7 +472,7 @@ html { background: var(--bg); }
   transform: translate(-50%, -50%);
   width: 140vw;
   max-width: 1800px;
-  height: 720px;
+  height: 140vh;
   pointer-events: none;
   z-index: 0;
   opacity: .75;

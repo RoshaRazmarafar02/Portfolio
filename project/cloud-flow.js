@@ -116,10 +116,13 @@
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.max(1, Math.floor(rect.width * dpr));
       canvas.height = Math.max(1, Math.floor(rect.height * dpr));
-      // Map logical (W,H) onto physical canvas
+      // sx adapts to viewport width as before.
+      // sy is locked to the original 720px reference height so making the
+      // canvas taller only adds transparent bleed — it never stretches content.
       const sx = canvas.width / W;
-      const sy = canvas.height / H;
-      ctx.setTransform(sx, 0, 0, sy, 0, 0);
+      const sy = (720 * dpr) / H;
+      const dy = (canvas.height - H * sy) / 2;
+      ctx.setTransform(sx, 0, 0, sy, 0, dy);
     }
     resize();
     if (!window.__cloudFlowResizeBound) {
@@ -375,7 +378,12 @@
       // Clear to transparent (no black fill — let the page background show)
       ctx.globalCompositeOperation = 'source-over';
       ctx.globalAlpha = 1;
-      ctx.clearRect(0, 0, W, H);
+      // Clear the full physical canvas (not just logical W×H) so the bleed
+      // area doesn't accumulate stale frames and appear thicker.
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
 
       // No glow — source-over compositing keeps colors true
       ctx.globalCompositeOperation = 'source-over';
