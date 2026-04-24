@@ -134,7 +134,6 @@
       // Cloud
       setTimeout(() => {
         window.__renderCloud && window.__renderCloud('skill-cloud', 42);
-        window.__renderCloud && window.__renderCloud('skill-cloud-2', 97);
         window.__renderCloudFlow && window.__renderCloudFlow('cloud-flow-canvas');
       }, 80);
     }
