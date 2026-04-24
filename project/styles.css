@@ -471,9 +471,8 @@ html { background: var(--bg); }
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 48px;
   overflow: visible;
   padding: 48px 0;
