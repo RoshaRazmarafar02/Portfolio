@@ -20,7 +20,7 @@
   const NODE_COUNT = 110;
   const CONNECT_RADIUS = 180;
   const MAX_EDGES_PER_NODE = 3;
-  const TRAIL_DURATION = 1.5; // seconds before a trail segment fades to zero
+  const TRAIL_DURATION = 3; // seconds before a trail segment fades to zero
 
   let CLUSTER_CX = 0, CLUSTER_CY = 0, CLUSTER_R = 0;
 
@@ -112,9 +112,9 @@
       const c = n.color;
       for (let i = 1; i < trail.length; i++) {
         const age = t - trail[i].t;
-        const alpha = Math.max(0, 1 - age / TRAIL_DURATION) * 0.45;
+        const alpha = Math.max(0, 1 - age / TRAIL_DURATION) * 0.3;
         if (alpha < 0.01) continue;
-        ctx.strokeStyle = `rgba(${c.r},${c.g},${c.b},${alpha.toFixed(3)})`;
+        ctx.strokeStyle = `rgba(${c.r},${c.g},${c.b},${alpha.toFixed(2)})`;
         ctx.beginPath();
         ctx.moveTo(trail[i - 1].x, trail[i - 1].y);
         ctx.lineTo(trail[i].x, trail[i].y);
@@ -138,7 +138,7 @@
       const take = neigh.slice(0, MAX_EDGES_PER_NODE);
       for (const { b, d } of take) {
         if (b.x + b.y < a.x + a.y) continue;
-        const alpha = (1 - d / CONNECT_RADIUS) * 0.13;
+        const alpha = (1 - d / CONNECT_RADIUS) * 0.2;
         const mix = {
           r: (a.color.r + b.color.r) / 2,
           g: (a.color.g + b.color.g) / 2,
