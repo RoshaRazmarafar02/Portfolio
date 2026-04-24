@@ -337,7 +337,7 @@ html { background: var(--bg); }
   align-self: stretch;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   min-height: 520px;
 }
 .plate-card {
