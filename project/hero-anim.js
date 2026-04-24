@@ -9,15 +9,13 @@
   let W = 0, H = 0, DPR = Math.min(window.devicePixelRatio || 1, 2);
   let trailCanvas, trailCtx;
 
-  // Palette: bold magenta (hue 310) + teal (hue 178) + silver.
+  // Palette: bold magenta (hue 310) + teal (hue 178).
   const PALETTE = [
     { r: 245, g: 30,  b: 210 },  // bold magenta
     { r: 232, g: 95,  b: 220 },  // soft magenta
     { r: 200, g: 0,   b: 172 },  // deep magenta
-    { r: 72,  g: 166, b: 180 },  // teal (complement)
-    { r: 120, g: 198, b: 205 },  // pale teal
-    { r: 216, g: 220, b: 224 },  // silver
-    { r: 200, g: 205, b: 210 },  // cool silver
+    { r: 25,  g: 229, b: 223 },  // bright teal
+    { r: 72,  g: 166, b: 180 },  // mid teal
   ];
 
   const NODE_COUNT = 110;
