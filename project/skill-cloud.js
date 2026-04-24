@@ -19,69 +19,29 @@
     { t: 'Control', tier: 3, style: 'serif' },
     { t: 'Stochastic Processes', tier: 3, style: 'serif' },
     { t: 'Numerical Methods', tier: 3, style: 'display' },
-
-    // // Tier 3 — languages and hard skills
-    // { t: 'C++', tier: 3, style: 'mono' },
-    // { t: 'Python', tier: 3, style: 'mono' },
-    // { t: 'Julia', tier: 3, style: 'mono' },
-    // { t: 'MATLAB', tier: 3, style: 'mono' },
-    // { t: 'PyTorch', tier: 3, style: 'display' },
-    // { t: 'Monte Carlo', tier: 3, style: 'serif' },
-    // { t: 'OMNET++', tier: 3, style: 'mono' },
-    // { t: 'dynamical systems', tier: 3, style: 'serif' },
-    // { t: 'control theory', tier: 3, style: 'serif' },
-    // { t: 'Networks', tier: 3, style: 'display' },
-    // { t: 'Optimization', tier: 3, style: 'display' },
-
-    // // Tier 4 — supporting / smaller
-    // { t: 'Linux', tier: 4, style: 'mono' },
-    // { t: 'C', tier: 4, style: 'mono' },
-    // { t: 'C#', tier: 4, style: 'mono' },
-    // { t: 'Java', tier: 4, style: 'mono' },
-    // { t: 'Git', tier: 4, style: 'mono' },
-    // { t: 'soft matter', tier: 4, style: 'serif' },
-    // { t: 'active matter', tier: 4, style: 'serif' },
-    // { t: 'score-based', tier: 4, style: 'serif' },
-    // { t: 'generative', tier: 4, style: 'display' },
-    // { t: 'LEACH', tier: 4, style: 'mono' },
-    // { t: 'clustering', tier: 4, style: 'display' },
-    // { t: 'ASP.NET', tier: 4, style: 'mono' },
-    // { t: 'emergent', tier: 4, style: 'serif' },
-    // { t: 'stochastic', tier: 4, style: 'serif' },
-    // { t: 'graph theory', tier: 4, style: 'display' },
-    // { t: 'sensor networks', tier: 4, style: 'display' },
-    // { t: 'numerical methods', tier: 4, style: 'display' },
   ];
 
-  const skills2 = [
-    { t: 'C++', tier: 3, style: 'mono' },
-    { t: 'Python', tier: 3, style: 'mono' },
-    { t: 'Julia', tier: 3, style: 'mono' },
-    { t: 'MATLAB', tier: 3, style: 'mono' },
-    { t: 'PyTorch', tier: 3, style: 'display' },
+  const toolsSkills = [
+    // Tier 1 — Core stack (center)
+    { t: 'Python', tier: 1, style: 'mono' },
+    { t: 'PyTorch', tier: 1, style: 'display' },
+
+    // Tier 2 — Strong technical tools
+    { t: 'C++', tier: 2, style: 'mono' },
+    { t: 'Julia', tier: 2, style: 'mono' },
+    { t: 'MATLAB', tier: 2, style: 'mono' },
+
+    // Tier 3 — Supporting tools
+    { t: 'NumPy', tier: 3, style: 'mono' },
+    { t: 'SciPy', tier: 3, style: 'mono' },
+    { t: 'Linux', tier: 3, style: 'mono' },
+    { t: 'Git', tier: 3, style: 'mono' },
     { t: 'Monte Carlo', tier: 3, style: 'serif' },
-    { t: 'OMNET++', tier: 3, style: 'mono' },
-    { t: 'dynamical systems', tier: 3, style: 'serif' },
-    { t: 'control theory', tier: 3, style: 'serif' },
-    { t: 'Networks', tier: 3, style: 'display' },
-    { t: 'Optimization', tier: 3, style: 'display' },
-    { t: 'Linux', tier: 4, style: 'mono' },
-    { t: 'C', tier: 4, style: 'mono' },
+
+    // Tier 4 — Background (low emphasis)
     { t: 'C#', tier: 4, style: 'mono' },
     { t: 'Java', tier: 4, style: 'mono' },
-    { t: 'Git', tier: 4, style: 'mono' },
-    { t: 'soft matter', tier: 4, style: 'serif' },
-    { t: 'active matter', tier: 4, style: 'serif' },
-    { t: 'score-based', tier: 4, style: 'serif' },
-    { t: 'generative', tier: 4, style: 'display' },
-    { t: 'LEACH', tier: 4, style: 'mono' },
-    { t: 'clustering', tier: 4, style: 'display' },
-    { t: 'ASP.NET', tier: 4, style: 'mono' },
-    { t: 'emergent', tier: 4, style: 'serif' },
-    { t: 'stochastic', tier: 4, style: 'serif' },
-    { t: 'graph theory', tier: 4, style: 'display' },
-    { t: 'sensor networks', tier: 4, style: 'display' },
-    { t: 'numerical methods', tier: 4, style: 'display' },
+    { t: 'Scalable Systems', tier: 4, style: 'display' },
   ];
 
   const TIER = {
@@ -117,7 +77,7 @@
 
   const CLOUD_SKILLS = {
     'skill-cloud':   skills1,
-    'skill-cloud-2': skills2,
+    'skill-cloud-2': toolsSkills,
   };
 
   function layout(container, seed, skillsArr) {
@@ -135,22 +95,13 @@
 
     const PAD = 14;
 
-    for (const item of items) {
-      const cfg = TIER[item.tier];
-      const ff = fontFor(item.style);
-      const sz = cfg.size * (W < 760 ? 0.72 : 1);
-      const { w, h } = measure(item.t, sz, ff, cfg.weight);
-
-      // Place with rejection sampling. Larger tiers → lower radius.
-      let best = null;
-      const maxTries = 260;
+    function tryPlace(item, cfg, ff, sz, w, h, relaxBounds, relaxCollision) {
+      const maxTries = relaxBounds ? 600 : 400;
+      const tierBias = { 1: 0.12, 2: 0.32, 3: 0.55, 4: 0.78 }[item.tier];
+      const rBase = Math.min(W, H) * (relaxBounds ? 0.48 : 0.45);
       for (let i = 0; i < maxTries; i++) {
-        // Radial scatter — bigger tier, smaller radius, but still some spread
-        const tierBias = { 1: 0.12, 2: 0.32, 3: 0.55, 4: 0.78 }[item.tier];
-        const rBase = Math.min(W, H) * 0.45;
-        const jitter = 0.25 + rand() * 0.6;
-        const radius = rBase * tierBias * jitter;
-        // Slight elliptical bias (wider than tall)
+        const jitter = relaxBounds ? (0.1 + rand() * 0.9) : (0.25 + rand() * 0.6);
+        const radius = rBase * (relaxBounds ? Math.max(tierBias, 0.1 + i / maxTries * 0.85) : tierBias) * jitter;
         const theta = rand() * Math.PI * 2;
         const x = cx + Math.cos(theta) * radius * 1.15;
         const y = cy + Math.sin(theta) * radius * 0.85;
@@ -160,16 +111,31 @@
         const bw = w + PAD;
         const bh = h + PAD;
 
-        // Bounds
-        if (bx < 4 || by < 4 || bx + bw > W - 4 || by + bh > H - 4) continue;
+        const margin = relaxBounds ? 2 : 4;
+        if (bx < margin || by < margin || bx + bw > W - margin || by + bh > H - margin) continue;
 
-        // Collision
-        let clash = false;
-        for (const p of placed) {
-          if (bx < p.x + p.w && bx + bw > p.x && by < p.y + p.h && by + bh > p.y) { clash = true; break; }
+        if (!relaxCollision) {
+          let clash = false;
+          for (const p of placed) {
+            if (bx < p.x + p.w && bx + bw > p.x && by < p.y + p.h && by + bh > p.y) { clash = true; break; }
+          }
+          if (clash) continue;
         }
-        if (!clash) { best = { x: bx, y: by, w: bw, h: bh, cx: x, cy: y }; break; }
+        return { x: bx, y: by, w: bw, h: bh, cx: x, cy: y };
       }
+      return null;
+    }
+
+    for (const item of items) {
+      const cfg = TIER[item.tier];
+      const ff = fontFor(item.style);
+      const sz = cfg.size * (W < 760 ? 0.72 : 1);
+      const { w, h } = measure(item.t, sz, ff, cfg.weight);
+
+      let best = tryPlace(item, cfg, ff, sz, w, h, false, false)
+             || tryPlace(item, cfg, ff, sz, w, h, true, false)
+             || tryPlace(item, cfg, ff, sz, w, h, true, true);
+
       if (!best) continue;
       placed.push(best);
 
