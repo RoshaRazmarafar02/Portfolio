@@ -313,8 +313,8 @@ html { background: var(--bg); }
 
 .hero-meta {
   display: grid;
-  grid-template-columns: repeat(2, max-content);
-  gap: 32px 56px;
+  grid-template-columns: 1fr;
+  gap: 24px;
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.08em;
