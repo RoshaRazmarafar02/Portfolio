@@ -114,7 +114,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 a { color: inherit; text-decoration: none; }
 
 /* Selection */
-::selection { background: var(--magenta); color: var(--bg); }
+::selection { background: var(--teal); color: var(--bg); }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -299,7 +299,7 @@ html { background: var(--bg); }
   font-weight: 400;
   font-size: clamp(26px, 3.5vw, 52px);
   letter-spacing: -0.02em;
-  color: var(--magenta-soft);
+  color: var(--magenta);
   white-space: nowrap;
 }
 
@@ -451,7 +451,7 @@ html { background: var(--bg); }
 .section-title .serif {
   font-family: var(--serif);
   font-style: italic;
-  color: var(--magenta-soft);
+  color: var(--magenta);
 }
 
 .section-desc {
