@@ -2,21 +2,58 @@
 // Deterministic pseudo-random from seed so layout is stable across reloads,
 // but can be re-shuffled on nav click.
 (function () {
-  const skills = [
+  const skills1 = [
     // Tier 1 (largest, most important) — computer engineering / systems identity
-    { t: 'Computer Engineering', tier: 1, style: 'display' },
-    { t: 'Distributed Systems', tier: 1, style: 'display' },
-    { t: 'Scientific Computing', tier: 1, style: 'display' },
+    { t: 'Machine Learning', tier: 1, style: 'display' },
+    { t: 'Generative Models', tier: 1, style: 'display' },
+    { t: 'Representation Learning', tier: 1, style: 'display' },    // Tier 2 — major domains
 
-    // Tier 2 — major domains
-    { t: 'Simulation', tier: 2, style: 'serif' },
-    { t: 'Reinforcement Learning', tier: 2, style: 'display' },
-    { t: 'Stochastic Processes', tier: 2, style: 'serif' },
-    { t: 'Neural Networks', tier: 2, style: 'display' },
     { t: 'Diffusion Models', tier: 2, style: 'display' },
-    { t: 'WSN', tier: 2, style: 'mono' },
+    { t: 'Reinforcement Learning', tier: 2, style: 'display' },
+    { t: 'Optimization', tier: 2, style: 'display' },
+    { t: 'Stochastic Modeling', tier: 2, style: 'serif' },
+    { t: 'Dynamical Systems', tier: 2, style: 'serif' },
 
-    // Tier 3 — languages and hard skills
+    { t: 'Simulation', tier: 3, style: 'serif' },
+    { t: 'Complex Systems', tier: 3, style: 'serif' },
+    { t: 'Control', tier: 3, style: 'serif' },
+    { t: 'Stochastic Processes', tier: 3, style: 'serif' },
+    { t: 'Numerical Methods', tier: 3, style: 'display' },
+
+    // // Tier 3 — languages and hard skills
+    // { t: 'C++', tier: 3, style: 'mono' },
+    // { t: 'Python', tier: 3, style: 'mono' },
+    // { t: 'Julia', tier: 3, style: 'mono' },
+    // { t: 'MATLAB', tier: 3, style: 'mono' },
+    // { t: 'PyTorch', tier: 3, style: 'display' },
+    // { t: 'Monte Carlo', tier: 3, style: 'serif' },
+    // { t: 'OMNET++', tier: 3, style: 'mono' },
+    // { t: 'dynamical systems', tier: 3, style: 'serif' },
+    // { t: 'control theory', tier: 3, style: 'serif' },
+    // { t: 'Networks', tier: 3, style: 'display' },
+    // { t: 'Optimization', tier: 3, style: 'display' },
+
+    // // Tier 4 — supporting / smaller
+    // { t: 'Linux', tier: 4, style: 'mono' },
+    // { t: 'C', tier: 4, style: 'mono' },
+    // { t: 'C#', tier: 4, style: 'mono' },
+    // { t: 'Java', tier: 4, style: 'mono' },
+    // { t: 'Git', tier: 4, style: 'mono' },
+    // { t: 'soft matter', tier: 4, style: 'serif' },
+    // { t: 'active matter', tier: 4, style: 'serif' },
+    // { t: 'score-based', tier: 4, style: 'serif' },
+    // { t: 'generative', tier: 4, style: 'display' },
+    // { t: 'LEACH', tier: 4, style: 'mono' },
+    // { t: 'clustering', tier: 4, style: 'display' },
+    // { t: 'ASP.NET', tier: 4, style: 'mono' },
+    // { t: 'emergent', tier: 4, style: 'serif' },
+    // { t: 'stochastic', tier: 4, style: 'serif' },
+    // { t: 'graph theory', tier: 4, style: 'display' },
+    // { t: 'sensor networks', tier: 4, style: 'display' },
+    // { t: 'numerical methods', tier: 4, style: 'display' },
+  ];
+
+  const skills2 = [
     { t: 'C++', tier: 3, style: 'mono' },
     { t: 'Python', tier: 3, style: 'mono' },
     { t: 'Julia', tier: 3, style: 'mono' },
@@ -28,8 +65,6 @@
     { t: 'control theory', tier: 3, style: 'serif' },
     { t: 'Networks', tier: 3, style: 'display' },
     { t: 'Optimization', tier: 3, style: 'display' },
-
-    // Tier 4 — supporting / smaller
     { t: 'Linux', tier: 4, style: 'mono' },
     { t: 'C', tier: 4, style: 'mono' },
     { t: 'C#', tier: 4, style: 'mono' },
@@ -80,7 +115,12 @@
     return "'Space Grotesk', system-ui, sans-serif";
   }
 
-  function layout(container, seed) {
+  const CLOUD_SKILLS = {
+    'skill-cloud':   skills1,
+    'skill-cloud-2': skills2,
+  };
+
+  function layout(container, seed, skillsArr) {
     container.innerHTML = '';
     const rect = container.getBoundingClientRect();
     const W = rect.width;
@@ -90,7 +130,7 @@
 
     const rand = mulberry32(seed || 42);
     // Sort by tier asc so big ones land first (near center).
-    const items = [...skills].sort((a, b) => a.tier - b.tier);
+    const items = [...skillsArr].sort((a, b) => a.tier - b.tier);
     const placed = []; // {x,y,w,h}
 
     const PAD = 14;
@@ -149,15 +189,14 @@
   window.__renderCloud = function (containerId, seed) {
     const el = document.getElementById(containerId);
     if (!el) return;
-    // Wait for fonts so measurement is accurate.
+    const skillsArr = CLOUD_SKILLS[containerId] || skills1;
     if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(() => layout(el, seed));
+      document.fonts.ready.then(() => layout(el, seed, skillsArr));
     } else {
-      layout(el, seed);
+      layout(el, seed, skillsArr);
     }
-    // Relayout on resize (debounced)
     let t;
-    const onR = () => { clearTimeout(t); t = setTimeout(() => layout(el, seed), 180); };
+    const onR = () => { clearTimeout(t); t = setTimeout(() => layout(el, seed, skillsArr), 180); };
     window.addEventListener('resize', onR, { passive: true });
   };
 })();
