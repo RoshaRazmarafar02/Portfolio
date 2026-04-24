@@ -253,7 +253,7 @@ html { background: var(--bg); }
   padding: 180px 48px 120px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 80px;
+  gap: 48px;
   align-items: center;
 }
 
@@ -343,7 +343,7 @@ html { background: var(--bg); }
 .plate-card {
   position: relative;
   width: 100%;
-  max-width: 420px;
+  max-width: 480px;
   padding: 24px;
   border: 1px solid var(--line);
   background: rgba(16, 16, 19, 0.55);
@@ -374,14 +374,16 @@ html { background: var(--bg); }
   color: var(--ink-faint);
 }
 .plate-row {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 20px;
   padding: 6px 0;
   border-bottom: 1px dashed var(--line);
+  align-items: baseline;
 }
 .plate-row:last-child { border-bottom: 0; }
 .plate-row .k { color: var(--ink-faint); }
-.plate-row .v { color: var(--ink); }
+.plate-row .v { color: var(--ink); text-align: right; }
 .plate-row .v.accent { color: var(--magenta-soft); }
 
 .scroll-cue {
