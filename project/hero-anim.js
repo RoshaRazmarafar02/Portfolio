@@ -22,8 +22,7 @@
   const MAX_EDGES_PER_NODE = 3;
   const TRAIL_DURATION = 3; // seconds before a trail segment fades to zero
 
-  let CLUSTER_CX = 0, CLUSTER_R = 0;
-  let CLUSTERS = []; // [{cx, cy}, {cx, cy}]
+  let CLUSTER_CX = 0, CLUSTER_CY = 0, CLUSTER_R = 0;
 
   const nodes = [];
 
@@ -36,23 +35,17 @@
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 
     CLUSTER_CX = W * (W > 900 ? 0.68 : 0.5);
-    CLUSTER_R = Math.min(W, H) * (W > 900 ? 0.22 : 0.26);
-    const gap = 48;
-    CLUSTERS = [
-      { cx: CLUSTER_CX, cy: H / 2 - CLUSTER_R - gap / 2 },
-      { cx: CLUSTER_CX, cy: H / 2 + CLUSTER_R + gap / 2 },
-    ];
+    CLUSTER_CY = H * 0.5;
+    CLUSTER_R = Math.min(W, H) * (W > 900 ? 0.28 : 0.34);
   }
 
   function seedNodes() {
     nodes.length = 0;
     for (let i = 0; i < NODE_COUNT; i++) {
-      const clusterIdx = i < NODE_COUNT / 2 ? 0 : 1;
-      const cl = CLUSTERS[clusterIdx];
       const angle = Math.random() * Math.PI * 2;
       const r = CLUSTER_R * Math.pow(Math.random(), 0.55);
-      const x = cl.cx + Math.cos(angle) * r;
-      const y = cl.cy + Math.sin(angle) * r;
+      const x = CLUSTER_CX + Math.cos(angle) * r;
+      const y = CLUSTER_CY + Math.sin(angle) * r;
       const color = PALETTE[i % PALETTE.length];
       nodes.push({
         x, y,
@@ -64,8 +57,7 @@
         color,
         twinkle: Math.random() * Math.PI * 2,
         noiseSeed: Math.random() * 1000,
-        clusterIdx,
-        trail: [],
+        trail: [], // [{x, y, t}, ...] timestamped positions
       });
     }
   }
@@ -87,9 +79,8 @@
       n.vx *= damp;
       n.vy *= damp;
 
-      const cl = CLUSTERS[n.clusterIdx];
-      const px = n.x - cl.cx;
-      const py = n.y - cl.cy;
+      const px = n.x - CLUSTER_CX;
+      const py = n.y - CLUSTER_CY;
       const d = Math.hypot(px, py);
       if (d > CLUSTER_R) {
         const over = (d - CLUSTER_R) / CLUSTER_R;
