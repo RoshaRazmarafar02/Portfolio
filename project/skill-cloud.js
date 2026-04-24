@@ -24,24 +24,21 @@
   const toolsSkills = [
     // Tier 1 — Core stack (center)
     { t: 'Python', tier: 1, style: 'mono' },
-    { t: 'PyTorch', tier: 1, style: 'display' },
+    { t: 'PyTorch', tier: 3, style: 'display' },
 
     // Tier 2 — Strong technical tools
-    { t: 'C++', tier: 2, style: 'mono' },
+    { t: 'C++', tier: 1, style: 'mono' },
     { t: 'Julia', tier: 2, style: 'mono' },
     { t: 'MATLAB', tier: 2, style: 'mono' },
 
     // Tier 3 — Supporting tools
-    { t: 'NumPy', tier: 3, style: 'mono' },
-    { t: 'SciPy', tier: 3, style: 'mono' },
     { t: 'Linux', tier: 3, style: 'mono' },
-    { t: 'Git', tier: 3, style: 'mono' },
-    { t: 'Monte Carlo', tier: 3, style: 'serif' },
+    { t: 'Git', tier: 2, style: 'mono' },
+    { t: 'C#', tier: 1, style: 'mono' },
 
     // Tier 4 — Background (low emphasis)
-    { t: 'C#', tier: 4, style: 'mono' },
-    { t: 'Java', tier: 4, style: 'mono' },
-    { t: 'Scalable Systems', tier: 4, style: 'display' },
+    { t: 'Java', tier: 3, style: 'mono' },
+    { t: 'Scalable Systems', tier: 3, style: 'display' },
   ];
 
   const TIER = {
