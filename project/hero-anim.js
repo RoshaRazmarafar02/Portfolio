@@ -1,6 +1,6 @@
 // Hero node-graph animation
 // Smooth Brownian wander inside a soft circular boundary, fading trails,
-// warm copper + complementary teal + silver palette.
+// bold magenta + complementary teal + silver palette.
 (function () {
   const canvas = document.getElementById('hero-canvas');
   if (!canvas) return;
@@ -9,12 +9,11 @@
   let W = 0, H = 0, DPR = Math.min(window.devicePixelRatio || 1, 2);
   let trailCanvas, trailCtx;
 
-  // Palette: warm copper + complementary teal + silver.
-  // Copper ~22° hue, teal ~195° (split-complement, close to true complement but cooler).
+  // Palette: bold magenta (hue 310) + teal (hue 178) + silver.
   const PALETTE = [
-    { r: 200, g: 115, b: 69 },   // copper
-    { r: 228, g: 166, b: 121 },  // rose gold
-    { r: 183, g: 110, b: 82 },   // deep copper
+    { r: 245, g: 30,  b: 210 },  // bold magenta
+    { r: 232, g: 95,  b: 220 },  // soft magenta
+    { r: 200, g: 0,   b: 172 },  // deep magenta
     { r: 72,  g: 166, b: 180 },  // teal (complement)
     { r: 120, g: 198, b: 205 },  // pale teal
     { r: 216, g: 220, b: 224 },  // silver
