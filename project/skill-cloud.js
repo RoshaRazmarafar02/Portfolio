@@ -51,10 +51,10 @@
   ];
 
   const TIER = {
-    1: { size: 56, weight: 300, color: 'ink', lh: 1 },
-    2: { size: 30, weight: 300, color: 'ink', lh: 1 },
-    3: { size: 20, weight: 400, color: 'mid', lh: 1 },
-    4: { size: 18, weight: 400, color: 'dim', lh: 1 },
+    1: { size: 60, weight: 300, color: 'ink', lh: 1 },
+    2: { size: 40, weight: 300, color: 'ink', lh: 1 },
+    3: { size: 34, weight: 400, color: 'mid', lh: 1 },
+    4: { size: 24, weight: 400, color: 'dim', lh: 1 },
   };
 
   // Simple deterministic RNG
@@ -99,7 +99,7 @@
     const items = [...skillsArr].sort((a, b) => a.tier - b.tier);
     const placed = []; // {x,y,w,h}
 
-    const PAD = 14;
+    const PAD = 28;
 
     function tryPlace(item, cfg, ff, sz, w, h, relaxBounds, relaxCollision) {
       const maxTries = relaxBounds ? 600 : 400;

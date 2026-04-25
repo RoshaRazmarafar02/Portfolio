@@ -495,8 +495,8 @@ html { background: var(--bg); }
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 1400px;
-  height: 800px;
+  max-width: 1700px;
+  height: 940px;
 }
 .cloud-item {
   position: absolute;
