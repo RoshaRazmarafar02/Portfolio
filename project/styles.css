@@ -503,10 +503,10 @@ html { background: var(--bg); }
   transform: translate(-50%, -50%);
   white-space: nowrap;
   color: var(--ink);
-  transition: color .4s ease, transform .5s cubic-bezier(.2,.7,.2,1), opacity .6s ease;
+  transition: color .25s ease, transform .35s cubic-bezier(.2,.7,.2,1), opacity .6s ease, font-weight .25s ease, text-shadow .25s ease, letter-spacing .25s ease;
   cursor: default;
   will-change: transform;
-  animation: floatIn .8s cubic-bezier(.2,.7,.2,1) both;
+  animation: floatIn 1.5s cubic-bezier(.2,.7,.2,1) both;
 }
 @keyframes floatIn {
   from { opacity: 0; transform: translate(-50%, -50%) scale(.9); }
@@ -514,7 +514,14 @@ html { background: var(--bg); }
 }
 .cloud-item:hover {
   color: var(--magenta-soft);
+  font-weight: 700 !important;
+  transform: translate(-50%, -50%) scale(1.12) !important;
+  text-shadow: 0 0 24px rgba(232, 121, 198, 0.45), 0 0 8px rgba(232, 121, 198, 0.35);
+  letter-spacing: 0.01em;
+  z-index: 5;
+  animation: none !important;
 }
+.cloud-item.mono:hover { letter-spacing: 0.04em; }
 .cloud-item.dim { color: var(--ink-faint); }
 .cloud-item.mid { color: var(--ink-dim); }
 .cloud-item.display { font-family: var(--display); }
@@ -850,4 +857,163 @@ html { background: var(--bg); }
   .proj-body-inner { grid-template-columns: 1fr; padding-left: 40px; }
   .edu-wrap { grid-template-columns: 1fr; gap: 48px; }
   .footer { grid-template-columns: 1fr 1fr; }
+}
+
+/* ======== Entry animations ======== */
+/* Typing caret for the h1 terminal line */
+.hero h1 .h1-terminal.typing { min-height: 1em; }
+.type-caret {
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--magenta, #c87345);
+  transform: translateY(-2px);
+  font-weight: 400;
+}
+.type-caret.blink {
+  animation: caret-blink 1s steps(2, start) infinite;
+}
+@keyframes caret-blink {
+  to { opacity: 0; }
+}
+
+/* Hero fade-in (everything except the typed line) */
+.fade-in-prep {
+  opacity: 0;
+  transform: translateY(8px);
+  filter: blur(2px);
+}
+.fade-in-go {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+  transition:
+    opacity .9s cubic-bezier(.2,.7,.2,1),
+    transform .9s cubic-bezier(.2,.7,.2,1),
+    filter .9s cubic-bezier(.2,.7,.2,1);
+}
+/* Plate-card just fades in place after the rest of the section animates */
+.hero .hero-plate.fade-in-prep {
+  opacity: 0;
+  transform: none;
+  filter: blur(2px);
+}
+.hero .hero-plate.fade-in-go {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  transition:
+    opacity 1.4s cubic-bezier(.2,.7,.2,1) .8s,
+    filter 1.4s cubic-bezier(.2,.7,.2,1) .8s;
+}
+
+/* Scroll-revealed sections + cards */
+.reveal-prep {
+  opacity: 0;
+  transform: translateY(28px);
+  will-change: opacity, transform;
+}
+.reveal-go {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity .85s cubic-bezier(.2,.7,.2,1),
+    transform .85s cubic-bezier(.2,.7,.2,1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in-prep, .reveal-prep { opacity: 1; transform: none; filter: none; }
+  .type-caret { display: none; }
+}
+
+/* ======== Custom cursor ======== */
+@media (pointer: fine) {
+  html, body { cursor: none; }
+  /* keep native cursor on text inputs so users can see the caret column */
+  input, textarea, [contenteditable="true"] { cursor: text; }
+  a, button, [role="button"], .nav-link, .cloud-item, .proj-row,
+  .scroll-cue, summary, label { cursor: none; }
+}
+
+.cursor-root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity .25s ease;
+  mix-blend-mode: screen;
+}
+.cursor-root.is-visible { opacity: 1; }
+
+.cursor-glow {
+  position: absolute;
+  top: 0; left: 0;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    hsl(178 90% 50% / 0.55) 0%,
+    hsl(178 90% 45% / 0.28) 35%,
+    hsl(178 90% 40% / 0.06) 65%,
+    transparent 75%
+  );
+  filter: blur(2px);
+  transition: width .25s cubic-bezier(.2,.7,.2,1),
+              height .25s cubic-bezier(.2,.7,.2,1),
+              opacity .25s ease;
+  will-change: transform;
+}
+
+.cursor-trail {
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  mix-blend-mode: screen;
+}
+
+.cursor-dot {
+  position: absolute;
+  top: 0; left: 0;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: hsl(178 95% 58%);
+  box-shadow:
+    0 0 6px hsl(178 95% 50% / 0.9),
+    0 0 14px hsl(178 90% 45% / 0.55);
+  transition: width .18s cubic-bezier(.2,.7,.2,1),
+              height .18s cubic-bezier(.2,.7,.2,1),
+              background .2s ease;
+  will-change: transform;
+}
+
+/* Hover — over interactive elements: glow widens, dot shrinks to a ring feel */
+.cursor-root.is-hover .cursor-glow {
+  width: 64px; height: 64px;
+  background: radial-gradient(
+    circle at center,
+    hsl(178 90% 55% / 0.42) 0%,
+    hsl(178 90% 45% / 0.22) 40%,
+    hsl(178 90% 40% / 0.05) 70%,
+    transparent 80%
+  );
+}
+.cursor-root.is-hover .cursor-dot {
+  width: 4px; height: 4px;
+  background: hsl(178 100% 70%);
+}
+
+/* Press — quick collapse */
+.cursor-root.is-down .cursor-glow {
+  width: 24px; height: 24px;
+}
+.cursor-root.is-down .cursor-dot {
+  width: 8px; height: 8px;
+  background: hsl(178 100% 75%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-root { display: none; }
+  html, body { cursor: auto; }
 }
