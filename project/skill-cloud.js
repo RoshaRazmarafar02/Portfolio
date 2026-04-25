@@ -2,50 +2,59 @@
 // Deterministic pseudo-random from seed so layout is stable across reloads,
 // but can be re-shuffled on nav click.
 (function () {
-  const skills1 = [
-    // Tier 1 (largest, most important) — computer engineering / systems identity
-    { t: 'Machine Learning', tier: 1, style: 'display' },
-    { t: 'Generative Models', tier: 1, style: 'display' },
-    { t: 'Representation Learning', tier: 1, style: 'display' },    // Tier 2 — major domains
+  const toolsSkills = [
+    // Tier 1 — Identity (center of gravity)
+    { t: 'ML', tier: 1, style: 'display' },
+    { t: 'Generative Models', tier: 2, style: 'display' },
+    { t: 'Representation Learning', tier: 3, style: 'display' },
 
+    // Tier 2 — Core domains
     { t: 'Diffusion Models', tier: 2, style: 'display' },
-    { t: 'Reinforcement Learning', tier: 2, style: 'display' },
+    { t: 'RL', tier: 2, style: 'display' },
     { t: 'Optimization', tier: 2, style: 'display' },
     { t: 'Stochastic Modeling', tier: 2, style: 'serif' },
     { t: 'Dynamical Systems', tier: 2, style: 'serif' },
 
-    { t: 'Simulation', tier: 3, style: 'serif' },
-    { t: 'Complex Systems', tier: 3, style: 'serif' },
-    { t: 'Control', tier: 3, style: 'serif' },
-    { t: 'Stochastic Processes', tier: 3, style: 'serif' },
-    { t: 'Numerical Methods', tier: 3, style: 'display' },
-  ];
+    // Tier 3 — Methods + ML ecosystem
+    { t: 'Neural Networks', tier: 3, style: 'display' },
+    { t: 'DL', tier: 1, style: 'display' },
+    { t: 'Computer Vision', tier: 3, style: 'display' },
+    { t: 'Information Theory', tier: 3, style: 'serif' },
+    { t: 'Statistical Modeling', tier: 3, style: 'serif' },
 
-  const toolsSkills = [
-    // Tier 1 — Core stack (center)
-    { t: 'Python', tier: 1, style: 'mono' },
+    // Tier 3 — Tools (integrated, not separate)
+    { t: 'Python', tier: 2, style: 'mono' },
     { t: 'PyTorch', tier: 3, style: 'display' },
+    { t: 'C++', tier: 3, style: 'mono' },
+    { t: 'Julia', tier: 3, style: 'mono' },
+    { t: 'MATLAB', tier: 3, style: 'mono' },
 
-    // Tier 2 — Strong technical tools
-    { t: 'C++', tier: 1, style: 'mono' },
-    { t: 'Julia', tier: 2, style: 'mono' },
-    { t: 'MATLAB', tier: 2, style: 'mono' },
+    // Tier 4 — Supporting tools & systems
+    { t: 'Linux', tier: 4, style: 'mono' },
+    { t: 'Git', tier: 4, style: 'mono' },
 
-    // Tier 3 — Supporting tools
-    { t: 'Linux', tier: 3, style: 'mono' },
-    { t: 'Git', tier: 2, style: 'mono' },
-    { t: 'C#', tier: 1, style: 'mono' },
+    // Tier 4 — Extended / background
+    { t: 'Complex Systems', tier: 4, style: 'serif' },
+    { t: 'Control', tier: 4, style: 'serif' },
+    { t: 'Monte Carlo', tier: 4, style: 'serif' },
 
-    // Tier 4 — Background (low emphasis)
-    { t: 'Java', tier: 3, style: 'mono' },
-    { t: 'Scalable Systems', tier: 3, style: 'display' },
+    // Tier 4 — Modern + exploratory
+    { t: 'Vector Databases', tier: 2, style: 'display' },
+    { t: 'RAG Systems', tier: 2, style: 'display' },
+
+    // Tier 4 — Background languages (low emphasis)
+    { t: 'C#', tier: 4, style: 'mono' },
+    { t: 'Java', tier: 4, style: 'mono' },
+    { t: '.NET', tier: 4, style: 'mono' },
+    { t: 'SQL', tier: 4, style: 'mono' },
+
   ];
 
   const TIER = {
     1: { size: 56, weight: 300, color: 'ink', lh: 1 },
-    2: { size: 34, weight: 300, color: 'ink', lh: 1 },
+    2: { size: 30, weight: 300, color: 'ink', lh: 1 },
     3: { size: 20, weight: 400, color: 'mid', lh: 1 },
-    4: { size: 14, weight: 400, color: 'dim', lh: 1 },
+    4: { size: 18, weight: 400, color: 'dim', lh: 1 },
   };
 
   // Simple deterministic RNG
@@ -73,7 +82,7 @@
   }
 
   const CLOUD_SKILLS = {
-    'skill-cloud':   skills1,
+    'skill-cloud':   toolsSkills,
     'skill-cloud-2': toolsSkills,
   };
 
@@ -95,13 +104,15 @@
     function tryPlace(item, cfg, ff, sz, w, h, relaxBounds, relaxCollision) {
       const maxTries = relaxBounds ? 600 : 400;
       const tierBias = { 1: 0.12, 2: 0.32, 3: 0.55, 4: 0.78 }[item.tier];
-      const rBase = Math.min(W, H) * (relaxBounds ? 0.48 : 0.45);
+      const scale = relaxBounds ? 0.88 : 0.82;
       for (let i = 0; i < maxTries; i++) {
         const jitter = relaxBounds ? (0.1 + rand() * 0.9) : (0.25 + rand() * 0.6);
-        const radius = rBase * (relaxBounds ? Math.max(tierBias, 0.1 + i / maxTries * 0.85) : tierBias) * jitter;
+        const effectiveBias = relaxBounds ? Math.max(tierBias, 0.1 + i / maxTries * 0.85) : tierBias;
+        const rx = cx * scale * effectiveBias * jitter;
+        const ry = cy * scale * effectiveBias * jitter;
         const theta = rand() * Math.PI * 2;
-        const x = cx + Math.cos(theta) * radius * 1.15;
-        const y = cy + Math.sin(theta) * radius * 0.85;
+        const x = cx + Math.cos(theta) * rx;
+        const y = cy + Math.sin(theta) * ry;
 
         const bx = x - w / 2 - PAD / 2;
         const by = y - h / 2 - PAD / 2;
@@ -152,7 +163,7 @@
   window.__renderCloud = function (containerId, seed) {
     const el = document.getElementById(containerId);
     if (!el) return;
-    const skillsArr = CLOUD_SKILLS[containerId] || skills1;
+    const skillsArr = CLOUD_SKILLS[containerId] || toolsSkills;
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => layout(el, seed, skillsArr));
     } else {

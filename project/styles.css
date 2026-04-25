@@ -475,7 +475,7 @@ html { background: var(--bg); }
   align-items: center;
   gap: 0px;
   overflow: visible;
-  padding: 48px 0;
+  padding: 0;
 }
 .cloud-flow {
   position: absolute;
@@ -495,8 +495,8 @@ html { background: var(--bg); }
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 1100px;
-  height: 500px;
+  max-width: 1400px;
+  height: 800px;
 }
 .cloud-item {
   position: absolute;
