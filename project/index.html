@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=12" />
+<link rel="stylesheet" href="styles.css?v=10" />
 </head>
 <body>
 <div class="shell">
@@ -17,7 +17,7 @@
     <div class="nav-brand">
       <span class="brand-mark">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="2.2" fill="hsl(310 80% 60%)"/>
+          <circle cx="12" cy="12" r="2.2" fill="#c87345"/>
           <circle cx="4" cy="6" r="1.4" fill="#d8dce0"/>
           <circle cx="20" cy="6" r="1.4" fill="#d8dce0"/>
           <circle cx="4" cy="18" r="1.4" fill="#d8dce0"/>
@@ -53,18 +53,18 @@
       <canvas id="hero-canvas" class="hero-canvas"></canvas>
       <div class="hero-content">
         <div>
-          <div class="hero-eyebrow">23.07.2002 &middot; Istanbul, Turkey</div>
           <h1>
             <span class="name">Rosha Razmarafar</span>
             <span class="h1-terminal">Computer Engineer_.</span>
           </h1>
           <p class="hero-sub">
-            <b>Machine learning</b> researcher working on <b>Generative Models</b> and <b>Reinforcement Learning</b>, with experience in data-driven modeling of complex dynamical systems. Currently a PhD candidate in Computational Science and Engineering at Koç University.
+            <b>Machine learning</b> researcher working on <b>Generative Models</b> and <b>Reinforcement Learning</b>, with experience in data-driven modeling of complex dynamical systems. Currently a PhD candidate in Computational Science and Engineering at Ko&ccedil; University.
           </p>
+          <div class="hero-eyebrow">23.07.2002 &middot; Istanbul, Turkey</div>
           <dl class="hero-meta">
             <div>
               <dt>Focus</dt>
-              <dd>Machine Learning · Generative & Diffusion Models · Complex Systems</dd>
+              <dd>Machine Learning &middot; Generative &amp; Diffusion Models &middot; Complex Systems</dd>
             </div>
             <div>
               <dt>Group</dt>
@@ -88,7 +88,7 @@
             <div class="plate-row"><span class="k">program</span><span class="v">Direct PhD, CMSE</span></div>
             <div class="plate-row"><span class="k">affiliation</span><span class="v accent">Ko&ccedil; University</span></div>
             <div class="plate-row"><span class="k">langs</span><span class="v">py / c++ / c# / matlab / .etc</span></div>
-            <div class="plate-row"><span class="k">interests</span><span class="v">generative models · representation learning · optimization · complex systems</span></div>
+            <div class="plate-row"><span class="k">interests</span><span class="v">generative models &middot; representation learning &middot; optimization &middot; complex systems</span></div>
             <div class="plate-row"><span class="k">status</span><span class="v accent">PhD Candidate</span></div>
           </div>
         </div>
@@ -100,7 +100,7 @@
     </section>
 
     <!-- SKILL CLOUD -->
-    <section class="section" style="padding-bottom: 0;">
+    <section class="section">
       <div class="bg-wash copper"></div>
       <div class="section-label">
         <span class="num">02 /</span>
@@ -108,13 +108,13 @@
         <span class="line"></span>
         <span>N=36</span>
       </div>
-      <h2 class="section-title">A System, not a <span class="serif">list</span>.</h2>
+      <h2 class="section-title">A terrain, not a <span class="serif">list</span>.</h2>
       <p class="section-desc">
-        A structured view of my work across machine learning — from generative modeling and representation learning to decision-making systems and scalable implementation.
+        The territory I work over — languages, substrates, ideas. Size and weight map to how central each is to my current practice. Typography switches between display, serif and monospace to separate tools, concepts and methods.
       </p>
       <div class="cloud-wrap">
         <canvas id="cloud-flow-canvas" class="cloud-flow" aria-hidden="true"></canvas>
-        <div class="cloud" id="skill-cloud-2"></div>
+        <div class="cloud" id="skill-cloud"></div>
         <div class="cloud-legend">
           <div>● display &middot; tools &amp; frameworks</div>
           <div>● serif &middot; concepts &amp; ideas</div>
@@ -328,7 +328,7 @@
 <!-- FOOTER -->
 <footer class="footer">
   <div>
-    <div class="big">Let&rsquo;s build systems that <span style="font-family:var(--serif); font-style:italic; color:var(--magenta-soft);">think</span>.</div>
+    <div class="big">Let&rsquo;s build systems that <span style="font-family:var(--serif); font-style:italic; color:var(--rose);">think</span>.</div>
     <div class="sig">Rosha Razmarafar &middot; &copy; 2026</div>
   </div>
   <div>
@@ -374,6 +374,7 @@
 }
 </style>
 
+<script src="hero-enter.js?v=1"></script>
 <script src="hero-anim.js?v=4"></script>
 <script src="skill-cloud.js?v=4"></script>
 <script src="cloud-flow.js?v=41"></script>
