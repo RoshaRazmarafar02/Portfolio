@@ -137,6 +137,10 @@
         window.__renderCloudFlow && window.__renderCloudFlow('cloud-flow-canvas');
       }, 80);
     }
+    // Run landing/scroll animations after mount
+    setTimeout(() => {
+      window.__runLandingAnim && window.__runLandingAnim();
+    }, 30);
     if (route === 'projects') {
       renderProjects(document.getElementById('proj-list'));
     }
