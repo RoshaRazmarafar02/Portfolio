@@ -19,10 +19,10 @@
         <canvas id="rl-canvas" width="560" height="560"></canvas>
 
         <div class="rl-controls">
-          <button data-action="train-fast">Train Fast</button>
-          <button data-action="demo">Show Result</button>
-          <button data-action="reset">Reset</button>
-          <button data-action="step">Step</button>
+            <button data-action="train-fast">Train</button>
+            <button data-action="demo">Run Policy</button>
+            <button data-action="step">One Step</button>
+            <button data-action="reset">Reset</button>        
         </div>
       </div>
 
@@ -42,6 +42,18 @@
         <div class="rl-note">
           Hit <b>Train Fast</b> to run 100 episodes instantly,
           then <b>Show Result</b> to watch the learned policy.
+        </div>
+        <div class="rl-stat">
+            <span>success</span>
+            <strong id="rl-success">0%</strong>
+        </div>
+        <div class="rl-stat">
+            <span>avg reward</span>
+            <strong id="rl-avg-reward">0.0</strong>
+        </div>
+        <div class="rl-stat">
+            <span>policy</span>
+            <strong id="rl-policy">raw</strong>
         </div>
       </div>
     </div>
@@ -80,6 +92,10 @@
   let running  = false;
   let timer    = null;
   let winFlash = 0;
+  let successes = 0;
+  let totalReward = 0;
+  let episodeReward = 0;
+  let recentRewards = [];
 
   // ── helpers ──────────────────────────────────────────────────────────────
 
@@ -144,9 +160,15 @@
     const bestNext = Math.max(...nextQ);
 
     currentQ[actionIndex] = oldValue + alpha * (result.reward + gamma * bestNext - oldValue);
+    episodeReward += result.reward;
     steps++;
 
     if (result.done || steps >= 80) {
+        if (result.done) successes++;
+        recentRewards.push(episodeReward);
+        if (recentRewards.length > 20) recentRewards.shift();
+        totalReward += episodeReward;
+        episodeReward = 0;
       episode++;
       epsilon = Math.max(0.05, epsilon * 0.985);
       resetCat();
@@ -204,9 +226,17 @@
   // ── rendering ─────────────────────────────────────────────────────────────
 
   function updateState() {
-    document.getElementById("rl-episode").textContent = episode.toString().padStart(3, "0");
-    document.getElementById("rl-steps").textContent   = steps.toString().padStart(2, "0");
-    document.getElementById("rl-epsilon").textContent = epsilon.toFixed(2);
+    const successRate = episode > 0 ? (successes / episode) * 100 : 0;
+    const avgReward = recentRewards.length > 0
+      ? recentRewards.reduce((a, b) => a + b, 0) / recentRewards.length
+      : 0;
+
+    document.getElementById("rl-episode").textContent     = episode.toString().padStart(3, "0");
+    document.getElementById("rl-steps").textContent       = steps.toString().padStart(2, "0");
+    document.getElementById("rl-epsilon").textContent     = epsilon.toFixed(2);
+    document.getElementById("rl-success").textContent     = `${successRate.toFixed(0)}%`;
+    document.getElementById("rl-avg-reward").textContent  = avgReward.toFixed(1);
+    document.getElementById("rl-policy").textContent      = episode >= 80 && successRate > 60 ? "learned" : "exploring";
   }
 
   function draw() {
