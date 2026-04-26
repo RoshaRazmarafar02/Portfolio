@@ -183,8 +183,13 @@
 
     for (let g = 0; g < numGroups; g++) {
       for (let attempt = 0; attempt < 150; attempt++) {
-        const sx = Math.floor(Math.random() * grid);
-        const sy = Math.floor(Math.random() * grid);
+        // Bias seed toward the midpoint between cat and mouse (t in 0.25–0.75)
+        // with a random offset of ±1–2 cells so groups don't all stack exactly
+        const t   = 0.25 + Math.random() * 0.5;
+        const jx  = Math.round((Math.random() - 0.5) * 3);
+        const jy  = Math.round((Math.random() - 0.5) * 3);
+        const sx  = Math.min(grid - 1, Math.max(0, Math.round(cat.x + t * (mouse.x - cat.x)) + jx));
+        const sy  = Math.min(grid - 1, Math.max(0, Math.round(cat.y + t * (mouse.y - cat.y)) + jy));
         if (safe.has(`${sx},${sy}`) || isWall(sx, sy)) continue;
 
         // Grow a connected group of 2–4 cells
