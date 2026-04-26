@@ -165,11 +165,10 @@
     steps++;
 
     if (result.done || steps >= 80) {
-        if (result.done) successes++;
-        recentRewards.push(episodeReward);
-        if (recentRewards.length > 20) recentRewards.shift();
-        totalReward += episodeReward;
-        episodeReward = 0;
+      if (result.done) successes++;
+      recentRewards.push(episodeReward);
+      if (recentRewards.length > 20) recentRewards.shift();
+      episodeReward = 0;
       episode++;
       epsilon = Math.max(0.05, epsilon * 0.985);
       resetCat();
@@ -373,12 +372,16 @@
 
   mount.querySelector('[data-action="reset"]').addEventListener("click", () => {
     clearInterval(timer);
-    running = false;
+    running       = false;
     for (const key in q) delete q[key];
-    episode  = 0;
-    epsilon  = 0.4;
-    winFlash = 0;
-    showPath = false;
+    episode       = 0;
+    epsilon       = 0.4;
+    winFlash      = 0;
+    showPath      = false;
+    successes     = 0;
+    totalReward   = 0;
+    episodeReward = 0;
+    recentRewards = [];
     resetCat();
     updateState();
     draw();
