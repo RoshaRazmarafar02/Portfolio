@@ -39,10 +39,7 @@
           <span>epsilon</span>
           <strong id="rl-epsilon">0.40</strong>
         </div>
-        <div class="rl-note">
-          Hit <b>Train Fast</b> to run 100 episodes instantly,
-          then <b>Show Result</b> to watch the learned policy.
-        </div>
+        
         <div class="rl-stat">
             <span>success</span>
             <strong id="rl-success">0%</strong>
@@ -54,6 +51,10 @@
         <div class="rl-stat">
             <span>policy</span>
             <strong id="rl-policy">raw</strong>
+        </div>
+        <div class="rl-note">
+          Press <b>Train</b> to let the cat learn over multiple episodes, then <b>Run Policy</b> to see the learned behavior. The cat explores the grid, seeking the mouse while avoiding walls, and learns from rewards and penalties.
+          Press <b>One Step</b> to advance the simulation incrementally, or <b>Reset</b> to start fresh with new random positions and walls.
         </div>
       </div>
     </div>

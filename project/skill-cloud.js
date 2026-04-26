@@ -28,6 +28,7 @@
     { t: 'C++', tier: 3, style: 'mono' },
     { t: 'Julia', tier: 3, style: 'mono' },
     { t: 'MATLAB', tier: 3, style: 'mono' },
+    { t: 'JS', tier: 3, style: 'mono' },
 
     // Tier 4 — Supporting tools & systems
     { t: 'Linux', tier: 4, style: 'mono' },
