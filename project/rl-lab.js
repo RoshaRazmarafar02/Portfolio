@@ -233,6 +233,9 @@
       if (maxVal > 0) ctx.fillRect(x * cell, y * cell, cell, cell);
     }
 
+    // Path hint — greedy policy trace from cat start to mouse
+    drawPathHint();
+
     // Walls
     walls.forEach(w => {
       ctx.fillStyle = "rgba(234,231,225,0.14)";
@@ -264,6 +267,62 @@
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(emoji, cx, cy);
+  }
+
+  function drawPathHint() {
+    if (Object.keys(q).length === 0) return;
+
+    const visited = new Set();
+    let x = 1, y = 6; // cat's reset position
+    const path = [];
+
+    for (let i = 0; i < grid * grid; i++) {
+      const key = `${x},${y}`;
+      if (visited.has(key)) break;
+      visited.add(key);
+      if (x === mouse.x && y === mouse.y) break;
+
+      const best = chooseBestAction(key);
+      const { dx, dy } = actions[best];
+      const nx = x + dx;
+      const ny = y + dy;
+      if (isOutside(nx, ny) || isWall(nx, ny)) break;
+
+      path.push({ x, y, dx, dy });
+      x = nx;
+      y = ny;
+    }
+
+    ctx.save();
+    ctx.strokeStyle = "rgba(25,229,223,0.45)";
+    ctx.fillStyle   = "rgba(25,229,223,0.45)";
+    ctx.lineWidth   = 1.5;
+    ctx.lineCap     = "round";
+
+    path.forEach(({ x, y, dx, dy }) => {
+      const cx  = x * cell + cell / 2;
+      const cy  = y * cell + cell / 2;
+      const sx  = cx - dx * cell * 0.18;
+      const sy  = cy - dy * cell * 0.18;
+      const ex  = cx + dx * cell * 0.28;
+      const ey  = cy + dy * cell * 0.28;
+      const ang = Math.atan2(dy, dx);
+      const h   = 7;
+
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(ex, ey);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(ex, ey);
+      ctx.lineTo(ex - h * Math.cos(ang - Math.PI / 5), ey - h * Math.sin(ang - Math.PI / 5));
+      ctx.lineTo(ex - h * Math.cos(ang + Math.PI / 5), ey - h * Math.sin(ang + Math.PI / 5));
+      ctx.closePath();
+      ctx.fill();
+    });
+
+    ctx.restore();
   }
 
   // ── controls ──────────────────────────────────────────────────────────────
