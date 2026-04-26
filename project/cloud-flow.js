@@ -186,6 +186,9 @@
       const uR = bR.u + (Math.random() - 0.5) * 2.75 * bR.spread;
 
       particles.push({
+        // Per-particle entry delay (s) so strands appear individually
+        entryDelay: Math.random() * 1.6,
+        entryDur: rand(0.7, 1.3),
         yL: CY + uL * FAN_Y,
         yR: CY + uR * FAN_Y,
         xL: -80 - Math.random() * 120,
@@ -343,37 +346,115 @@
 
     // Render one particle's trail via many short additive line segments.
     function drawParticle(p, t) {
+      // Per-particle entry: each strand reveals on its own delay.
+      // We do a quick left→right per-strand wipe over entryDur once unblocked.
+      const localT = t - p.entryDelay;
+      if (localT <= 0) return;
+      const e = Math.min(1, localT / p.entryDur);
+      const ease = e * e * (3 - 2 * e);          // smoothstep
+      const strandFront = ease * 1.15;            // slight overshoot to clear soft band
       const SAMPLES = 48;
       const xLen = p.xR - p.xL;
       let prev = null;
+      // We draw each segment twice when it's near the front:
+      //  - a base pass at normal weight/alpha (the trail)
+      //  - a glow pass with thicker stroke + 'lighter' compositing, alpha
+      //    proportional to how close the segment is to the leading edge.
+      // The glow tapers off behind the head so the line settles to normal.
       for (let i = 0; i <= SAMPLES; i++) {
         const along = i / SAMPLES;
         const x = p.xL + xLen * along;
         const pt = pointAt(p, x, t);
         if (prev) {
           const xn = clamp((x - CX) / (W / 2), -1, 1);
-          ctx.beginPath();
-          ctx.moveTo(prev.x, prev.y);
-          ctx.lineTo(pt.x, pt.y);
-          const yn = clamp(((prev.y + pt.y) / 2 - CY) / FAN_Y, -1, 1);
-          ctx.strokeStyle = strokeStyle(p, along, xn, yn);
-          ctx.globalAlpha = p.alpha;
-          ctx.lineWidth = p.weight;
-          ctx.stroke();
+          const xnDraw = (xn + 1) / 2;
+          const soft = 0.22;
+          const revealAlpha = clamp((strandFront - xnDraw) / soft, 0, 1);
+          if (revealAlpha > 0.01) {
+            const yn = clamp(((prev.y + pt.y) / 2 - CY) / FAN_Y, -1, 1);
+            const ss = strokeStyle(p, along, xn, yn);
+
+            // ---- Base trail segment ----
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.strokeStyle = ss;
+            ctx.globalAlpha = p.alpha * revealAlpha;
+            ctx.lineWidth = p.weight;
+            ctx.beginPath();
+            ctx.moveTo(prev.x, prev.y);
+            ctx.lineTo(pt.x, pt.y);
+            ctx.stroke();
+
+            // ---- Glow pass at the leading tip ----
+            // headness = 1 right at the front (revealAlpha→0 from above 0),
+            // fading to 0 behind it. Only fires while the strand is still
+            // entering (ease < 1) so the line settles to normal afterward.
+            const headness = (1 - revealAlpha);
+            // sharper falloff so the glow is concentrated at the tip
+            const tipFalloff = Math.pow(headness, 2.4);
+            const settle = 1 - Math.pow(Math.max(0, ease - 0.7) / 0.3, 1.5);
+            const glowAmt = tipFalloff * Math.max(0, settle);
+            if (glowAmt > 0.02) {
+              ctx.globalCompositeOperation = 'lighter';
+              // Outer wide soft glow
+              ctx.strokeStyle = ss;
+              ctx.lineWidth = p.weight * 5.5;
+              ctx.globalAlpha = 0.18 * glowAmt;
+              ctx.beginPath();
+              ctx.moveTo(prev.x, prev.y);
+              ctx.lineTo(pt.x, pt.y);
+              ctx.stroke();
+              // Mid glow
+              ctx.lineWidth = p.weight * 2.8;
+              ctx.globalAlpha = 0.35 * glowAmt;
+              ctx.beginPath();
+              ctx.moveTo(prev.x, prev.y);
+              ctx.lineTo(pt.x, pt.y);
+              ctx.stroke();
+              // Bright hot core right at the tip
+              ctx.strokeStyle = '#ffffff';
+              ctx.lineWidth = p.weight * 1.4;
+              ctx.globalAlpha = 0.85 * glowAmt;
+              ctx.beginPath();
+              ctx.moveTo(prev.x, prev.y);
+              ctx.lineTo(pt.x, pt.y);
+              ctx.stroke();
+              ctx.globalCompositeOperation = 'source-over';
+            }
+          }
         }
         prev = pt;
       }
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
     }
 
     // --- Animation loop --------------------------------------------------
     if (animState) animState.cancelled = true;
-    const state = { cancelled: false };
+    const state = { cancelled: false, started: false, startTime: 0 };
     animState = state;
 
-    const start = performance.now();
+    // Start the reveal only when the canvas first scrolls into view.
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting && !state.started) {
+            state.started = true;
+            state.startTime = performance.now();
+            io.disconnect();
+          }
+        }
+      }, { threshold: 0.15 });
+      io.observe(canvas);
+    } else {
+      state.started = true;
+      state.startTime = performance.now();
+    }
+
     function tick(now) {
       if (state.cancelled) return;
-      const t = (now - start) / 1000;
+      // Pre-reveal: clear and idle until the section comes into view
+      const t = state.started ? (now - state.startTime) / 1000 : 0;
+      const drawLines = state.started;
 
       // Clear to transparent (no black fill — let the page background show)
       ctx.globalCompositeOperation = 'source-over';
@@ -389,18 +470,28 @@
       ctx.globalCompositeOperation = 'source-over';
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
+      // Per-particle entry: drawParticle handles its own delay & wipe.
+      // Track the longest strand finish time so dots fade in after lines settle.
+      let maxFinish = 0;
+      for (const p of particles) {
+        const f = p.entryDelay + p.entryDur;
+        if (f > maxFinish) maxFinish = f;
+      }
       for (let i = 0; i < particles.length; i++) {
         drawParticle(particles[i], t);
       }
 
-      // Dots (big accents + scatter)
+      // Global dot fade-in — dots fade up once most strands have appeared
+      const dotIn = clamp((t - maxFinish * 0.55) / (maxFinish * 0.6), 0, 1);
+
+      // Dots (big accents + scatter) — fade in with the wipe
       for (const d of dots) {
         const dx = Math.sin(t * d.freq + d.phase) * d.amp;
         const dy = Math.cos(t * d.freq * 0.9 + d.phase * 1.3) * d.amp * 0.8;
         ctx.beginPath();
         ctx.arc(d.x + dx, d.y + dy, d.r, 0, Math.PI * 2);
         ctx.fillStyle = `hsl(${d.hue.toFixed(0)} 92% ${d.light.toFixed(0)}%)`;
-        ctx.globalAlpha = d.solid ? 0.95 : 0.75;
+        ctx.globalAlpha = (d.solid ? 0.95 : 0.75) * dotIn;
         ctx.fill();
       }
       // Tip dots (small scatter riding the fan ends)
@@ -410,7 +501,7 @@
         ctx.beginPath();
         ctx.arc(d.x + dx, d.y + dy, d.r, 0, Math.PI * 2);
         ctx.fillStyle = `hsl(${d.hue.toFixed(0)} 90% ${d.light.toFixed(0)}%)`;
-        ctx.globalAlpha = 0.55;
+        ctx.globalAlpha = 0.55 * dotIn;
         ctx.fill();
       }
       ctx.globalAlpha = 1;

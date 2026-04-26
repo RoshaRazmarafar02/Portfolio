@@ -135,8 +135,10 @@
       setTimeout(() => {
         window.__renderCloud && window.__renderCloud('skill-cloud', 42);
         window.__renderCloudFlow && window.__renderCloudFlow('cloud-flow-canvas');
+        window.__renderRLLab && window.__renderRLLab('rl-lab-canvas');
       }, 80);
     }
+    
     // Run landing/scroll animations after mount
     setTimeout(() => {
       window.__runLandingAnim && window.__runLandingAnim();

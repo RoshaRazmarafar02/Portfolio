@@ -1051,3 +1051,146 @@ html { background: var(--bg); }
   .cursor-root { display: none; }
   html, body { cursor: auto; }
 }
+
+
+.rl-lab {
+  margin-top: 48px;
+}
+
+.rl-shell {
+  display: grid;
+  grid-template-columns: minmax(320px, 620px) 1fr;
+  gap: 32px;
+  align-items: stretch;
+}
+
+.rl-panel,
+.rl-side {
+  border: 1px solid var(--line);
+  background: rgba(16, 16, 19, 0.55);
+  backdrop-filter: blur(8px);
+}
+
+.rl-panel {
+  padding: 20px;
+}
+
+.rl-topbar {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.rl-kicker {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 8px;
+}
+
+.rl-topbar h3 {
+  font-weight: 400;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+}
+
+.rl-status {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.rl-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--teal);
+  box-shadow: 0 0 8px var(--teal);
+}
+
+#rl-canvas {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: block;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+}
+
+.rl-controls {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  margin-top: 14px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.rl-controls button {
+  padding: 13px 10px;
+  background: var(--bg);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  transition: background 0.2s, color 0.2s;
+}
+
+.rl-controls button:hover {
+  background: var(--bg-elev);
+  color: var(--magenta-soft);
+}
+
+.rl-side {
+  padding: 24px;
+  display: grid;
+  align-content: start;
+  gap: 18px;
+}
+
+.rl-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed var(--line);
+  font-family: var(--mono);
+}
+
+.rl-stat span {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.rl-stat strong {
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.rl-note {
+  margin-top: 18px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink-dim);
+}
+
+@media (max-width: 960px) {
+  .rl-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .rl-controls {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
