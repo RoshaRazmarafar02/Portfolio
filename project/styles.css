@@ -1194,3 +1194,25 @@ html { background: var(--bg); }
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ── Win animation overlay ─────────────────────────────────────────────── */
+.rl-canvas-wrap {
+  position: relative;
+}
+#win-overlay {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  display: none;
+  z-index: 5;
+}
+#win-cat-img {
+  position: absolute;
+  width: 110px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  top: 50%;
+  left: -110px;
+  transform: translateY(-50%);
+}

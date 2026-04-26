@@ -8,7 +8,7 @@
         <div class="rl-topbar">
           <div>
             <div class="rl-kicker">gridworld://cat-agent</div>
-            <h3>Cat vs. Mouse</h3>
+            <h3>Reinforcement Learning Micro-Lab: Cat vs. Mouse</h3>
           </div>
           <div class="rl-status">
             <span class="rl-dot"></span>
@@ -16,7 +16,12 @@
           </div>
         </div>
 
-        <canvas id="rl-canvas" width="560" height="560"></canvas>
+        <div class="rl-canvas-wrap">
+          <canvas id="rl-canvas" width="560" height="560"></canvas>
+          <div id="win-overlay" aria-hidden="true">
+            <img id="win-cat-img" src="" alt="" />
+          </div>
+        </div>
 
         <div class="rl-controls">
             <button data-action="train-fast">Train</button>
@@ -240,7 +245,7 @@
     return best;
   }
 
-  function takeAction(actionIndex) {
+  function takeAction(actionIndex, animate = true) {
     const action = actions[actionIndex];
     const nx = cat.x + action.dx;
     const ny = cat.y + action.dy;
@@ -253,7 +258,10 @@
     cat.y = ny;
 
     const reachedMouse = cat.x === mouse.x && cat.y === mouse.y;
-    if (reachedMouse) winFlash = 10;
+    if (reachedMouse) {
+      winFlash = 10;
+      if (animate) playWinAnimation();
+    }
     return {
       next:   { x: cat.x, y: cat.y },
       reward: reachedMouse ? 10 : -0.1,
@@ -266,7 +274,7 @@
   function LearningStep(shouldDraw = true) {
     const state       = stateKey(cat);
     const actionIndex = chooseAction(state);
-    const result      = takeAction(actionIndex);
+    const result      = takeAction(actionIndex, shouldDraw);
     const nextState   = stateKey(result.next);
 
     const currentQ = getQ(state);
@@ -330,7 +338,7 @@
       }
 
       // Bail if stuck (shouldn't happen with a trained policy, but safety net)
-      if (steps > 120) {
+      if (steps > 30) {
         clearInterval(timer);
         running = false;
       }
@@ -470,6 +478,49 @@
     });
 
     ctx.restore();
+  }
+
+  // ── win animation ────────────────────────────────────────────────────────
+
+  const CAT_FRAMES = ['1','2','3','4'].map(n => `assets/cat/cat_${n}.png`);
+  // preload
+  CAT_FRAMES.forEach(src => { const i = new Image(); i.src = src; });
+
+  function playWinAnimation() {
+    const overlay = mount.querySelector('#win-overlay');
+    const img     = mount.querySelector('#win-cat-img');
+    if (!overlay || !img) return;
+
+    const DURATION = 1300;
+    const CAT_W    = 110;
+    let frameIndex = 0;
+    let startTs    = null;
+
+    img.src = CAT_FRAMES[0];
+    overlay.style.display = 'block';
+
+    const frameTimer = setInterval(() => {
+      frameIndex = (frameIndex + 1) % CAT_FRAMES.length;
+      img.src = CAT_FRAMES[frameIndex];
+    }, 75);
+
+    const canvasW = canvas.offsetWidth || 560;
+
+    function step(ts) {
+      if (!startTs) startTs = ts;
+      const p = Math.min((ts - startTs) / DURATION, 1);
+      const x = -CAT_W + (canvasW + CAT_W * 2) * p;
+      const bounce = -6 * Math.abs(Math.sin(p * Math.PI * 5));
+      img.style.left = x + 'px';
+      img.style.top  = `calc(50% + ${bounce.toFixed(1)}px)`;
+      if (p < 1) {
+        requestAnimationFrame(step);
+      } else {
+        clearInterval(frameTimer);
+        overlay.style.display = 'none';
+      }
+    }
+    requestAnimationFrame(step);
   }
 
   // ── controls ──────────────────────────────────────────────────────────────
