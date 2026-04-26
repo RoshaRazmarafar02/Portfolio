@@ -110,6 +110,38 @@
   function isWall(x, y)    { return walls.some(w => w.x === x && w.y === y); }
   function isOutside(x, y) { return x < 0 || x >= grid || y < 0 || y >= grid; }
 
+  function hasPath(sx, sy, ex, ey) {
+    const visited = new Set();
+    const queue = [{ x: sx, y: sy }];
+    visited.add(`${sx},${sy}`);
+    while (queue.length) {
+      const { x, y } = queue.shift();
+      if (x === ex && y === ey) return true;
+      for (const { dx, dy } of actions) {
+        const nx = x + dx, ny = y + dy, k = `${nx},${ny}`;
+        if (!isOutside(nx, ny) && !isWall(nx, ny) && !visited.has(k)) {
+          visited.add(k); queue.push({ x: nx, y: ny });
+        }
+      }
+    }
+    return false;
+  }
+
+  function randomizeWalls() {
+    const safe = new Set(['1,6','6,1','0,6','2,6','1,7','1,5','5,1','6,0','6,2','7,1']);
+    walls.length = 0;
+    const target = 4 + Math.floor(Math.random() * 4); // 4–7 walls
+    let attempts = 0;
+    while (walls.length < target && attempts < 300) {
+      attempts++;
+      const x = Math.floor(Math.random() * grid);
+      const y = Math.floor(Math.random() * grid);
+      if (safe.has(`${x},${y}`) || isWall(x, y)) continue;
+      walls.push({ x, y });
+      if (!hasPath(1, 6, 6, 1)) walls.pop(); // revert if it blocks the path
+    }
+  }
+
   function resetCat() { cat.x = 1; cat.y = 6; steps = 0; }
 
   function chooseAction(state) {
@@ -374,6 +406,7 @@
     clearInterval(timer);
     running       = false;
     for (const key in q) delete q[key];
+    randomizeWalls();
     episode       = 0;
     epsilon       = 0.4;
     winFlash      = 0;
