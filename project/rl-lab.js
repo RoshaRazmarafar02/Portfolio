@@ -491,8 +491,8 @@
     const img     = mount.querySelector('#win-cat-img');
     if (!overlay || !img) return;
 
-    const DURATION = 1300;
-    const CAT_W    = 110;
+    const DURATION = 1400;
+    const CAT_W    = 140;
     let frameIndex = 0;
     let startTs    = null;
 
@@ -504,7 +504,7 @@
       img.src = CAT_FRAMES[frameIndex];
     }, 75);
 
-    const canvasW = canvas.offsetWidth || 560;
+    const canvasW = window.innerWidth;
 
     function step(ts) {
       if (!startTs) startTs = ts;

@@ -1200,19 +1200,19 @@ html { background: var(--bg); }
   position: relative;
 }
 #win-overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
   display: none;
-  z-index: 5;
+  z-index: 9000;
 }
 #win-cat-img {
   position: absolute;
-  width: 110px;
+  width: 140px;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   top: 50%;
-  left: -110px;
+  left: -140px;
   transform: translateY(-50%);
 }
