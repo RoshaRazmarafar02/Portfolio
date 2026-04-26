@@ -94,9 +94,8 @@
   let winFlash  = 0;
   let showPath  = false;
   let successes = 0;
-  let totalReward = 0;
   let episodeReward = 0;
-  let recentRewards = [];
+  let winRewards = [];
 
   // ── helpers ──────────────────────────────────────────────────────────────
 
@@ -164,7 +163,7 @@
     const ny = cat.y + action.dy;
 
     if (isOutside(nx, ny) || isWall(nx, ny)) {
-      return { next: { x: cat.x, y: cat.y }, reward: -5, done: false };
+      return { next: { x: cat.x, y: cat.y }, reward: -0.5, done: false };
     }
 
     cat.x = nx;
@@ -174,7 +173,7 @@
     if (reachedMouse) winFlash = 10;
     return {
       next:   { x: cat.x, y: cat.y },
-      reward: reachedMouse ? 10 : -1,
+      reward: reachedMouse ? 10 : -0.1,
       done:   reachedMouse,
     };
   }
@@ -197,9 +196,11 @@
     steps++;
 
     if (result.done || steps >= 80) {
-      if (result.done) successes++;
-      recentRewards.push(episodeReward);
-      if (recentRewards.length > 20) recentRewards.shift();
+      if (result.done) {
+        successes++;
+        winRewards.push(episodeReward);
+        if (winRewards.length > 20) winRewards.shift();
+      }
       episodeReward = 0;
       episode++;
       epsilon = Math.max(0.05, epsilon * 0.985);
@@ -260,15 +261,15 @@
 
   function updateState() {
     const successRate = episode > 0 ? (successes / episode) * 100 : 0;
-    const avgReward = recentRewards.length > 0
-      ? recentRewards.reduce((a, b) => a + b, 0) / recentRewards.length
+    const avgReward   = winRewards.length > 0
+      ? winRewards.reduce((a, b) => a + b, 0) / winRewards.length
       : 0;
 
     document.getElementById("rl-episode").textContent     = episode.toString().padStart(3, "0");
     document.getElementById("rl-steps").textContent       = steps.toString().padStart(2, "0");
     document.getElementById("rl-epsilon").textContent     = epsilon.toFixed(2);
     document.getElementById("rl-success").textContent     = `${successRate.toFixed(0)}%`;
-    document.getElementById("rl-avg-reward").textContent  = avgReward.toFixed(1);
+    document.getElementById("rl-avg-reward").textContent  = winRewards.length > 0 ? avgReward.toFixed(1) : "—";
     document.getElementById("rl-policy").textContent      = episode >= 80 && successRate > 60 ? "learned" : "exploring";
   }
 
@@ -412,9 +413,8 @@
     winFlash      = 0;
     showPath      = false;
     successes     = 0;
-    totalReward   = 0;
     episodeReward = 0;
-    recentRewards = [];
+    winRewards    = [];
     resetCat();
     updateState();
     draw();
