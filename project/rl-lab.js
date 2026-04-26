@@ -65,8 +65,9 @@
   const grid = 8;
   const cell = canvas.width / grid;
 
-  const cat   = { x: 1, y: 6 };
-  const mouse = { x: 6, y: 1 };
+  const cat      = { x: 1, y: 6 };
+  const mouse    = { x: 6, y: 1 };
+  const catStart = { x: 1, y: 6 };
   const walls = [
     { x: 3, y: 2 },
     { x: 3, y: 3 },
@@ -128,7 +129,7 @@
 
   function policyReachesGoal() {
     const visited = new Set();
-    let x = 1, y = 6;
+    let x = catStart.x, y = catStart.y;
     for (let i = 0; i < grid * grid; i++) {
       const key = `${x},${y}`;
       if (visited.has(key)) return false;
@@ -142,22 +143,83 @@
     return false;
   }
 
+  function safeCells() {
+    const safe = new Set();
+    const pad = (px, py) => {
+      for (let dx = -1; dx <= 1; dx++)
+        for (let dy = -1; dy <= 1; dy++) {
+          const nx = px + dx, ny = py + dy;
+          if (!isOutside(nx, ny)) safe.add(`${nx},${ny}`);
+        }
+    };
+    pad(cat.x, cat.y);
+    pad(mouse.x, mouse.y);
+    return safe;
+  }
+
+  function randomizeCatMouse() {
+    for (let attempt = 0; attempt < 400; attempt++) {
+      const cx = Math.floor(Math.random() * grid);
+      const cy = Math.floor(Math.random() * grid);
+      const mx = Math.floor(Math.random() * grid);
+      const my = Math.floor(Math.random() * grid);
+      const dist = Math.abs(cx - mx) + Math.abs(cy - my);
+      if (dist < 7) continue;
+      if (isWall(cx, cy) || isWall(mx, my)) continue;
+      cat.x = cx;   cat.y = cy;
+      catStart.x = cx; catStart.y = cy;
+      mouse.x = mx; mouse.y = my;
+      if (hasPath(cx, cy, mx, my)) return;
+    }
+    // fallback
+    cat.x = catStart.x = 1; cat.y = catStart.y = 6;
+    mouse.x = 6; mouse.y = 1;
+  }
+
   function randomizeWalls() {
-    const safe = new Set(['1,6','6,1','0,6','2,6','1,7','1,5','5,1','6,0','6,2','7,1']);
     walls.length = 0;
-    const target = 4 + Math.floor(Math.random() * 4); // 4–7 walls
-    let attempts = 0;
-    while (walls.length < target && attempts < 300) {
-      attempts++;
-      const x = Math.floor(Math.random() * grid);
-      const y = Math.floor(Math.random() * grid);
-      if (safe.has(`${x},${y}`) || isWall(x, y)) continue;
-      walls.push({ x, y });
-      if (!hasPath(1, 6, 6, 1)) walls.pop(); // revert if it blocks the path
+    const safe = safeCells();
+    const numGroups = 2 + Math.floor(Math.random() * 2); // 2–3 groups
+
+    for (let g = 0; g < numGroups; g++) {
+      for (let attempt = 0; attempt < 150; attempt++) {
+        const sx = Math.floor(Math.random() * grid);
+        const sy = Math.floor(Math.random() * grid);
+        if (safe.has(`${sx},${sy}`) || isWall(sx, sy)) continue;
+
+        // Grow a connected group of 2–4 cells
+        const group = [{ x: sx, y: sy }];
+        const size = 2 + Math.floor(Math.random() * 3);
+        let cur = group[0];
+
+        for (let i = 1; i < size; i++) {
+          const dirs = [{ dx:0,dy:-1 },{ dx:0,dy:1 },{ dx:-1,dy:0 },{ dx:1,dy:0 }]
+            .sort(() => Math.random() - 0.5);
+          for (const { dx, dy } of dirs) {
+            const nx = cur.x + dx, ny = cur.y + dy;
+            const key = `${nx},${ny}`;
+            if (!isOutside(nx, ny) && !safe.has(key) && !isWall(nx, ny)
+                && !group.some(c => c.x === nx && c.y === ny)) {
+              group.push({ x: nx, y: ny });
+              cur = { x: nx, y: ny };
+              break;
+            }
+          }
+        }
+
+        if (group.length < 2) continue;
+
+        for (const c of group) walls.push(c);
+        if (!hasPath(cat.x, cat.y, mouse.x, mouse.y)) {
+          for (let i = 0; i < group.length; i++) walls.pop();
+        } else {
+          break; // group placed successfully
+        }
+      }
     }
   }
 
-  function resetCat() { cat.x = 1; cat.y = 6; steps = 0; }
+  function resetCat() { cat.x = catStart.x; cat.y = catStart.y; steps = 0; }
 
   function chooseAction(state) {
     if (Math.random() < epsilon) return Math.floor(Math.random() * actions.length);
@@ -353,7 +415,7 @@
     if (!showPath || Object.keys(q).length === 0) return;
 
     const visited = new Set();
-    let x = 1, y = 6; // cat's reset position
+    let x = catStart.x, y = catStart.y;
     const path = [];
 
     for (let i = 0; i < grid * grid; i++) {
@@ -423,6 +485,8 @@
     clearInterval(timer);
     running       = false;
     for (const key in q) delete q[key];
+    walls.length  = 0;
+    randomizeCatMouse();
     randomizeWalls();
     episode       = 0;
     epsilon       = 0.4;
