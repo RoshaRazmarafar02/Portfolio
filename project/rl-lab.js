@@ -270,7 +270,7 @@
     document.getElementById("rl-epsilon").textContent     = epsilon.toFixed(2);
     document.getElementById("rl-success").textContent     = `${successRate.toFixed(0)}%`;
     document.getElementById("rl-avg-reward").textContent  = winRewards.length > 0 ? avgReward.toFixed(1) : "—";
-    document.getElementById("rl-policy").textContent      = episode >= 80 && successRate > 60 ? "learned" : "exploring";
+    document.getElementById("rl-policy").textContent      = successes >= 5 && successRate > 50 ? "learned" : "exploring";
   }
 
   function draw() {
