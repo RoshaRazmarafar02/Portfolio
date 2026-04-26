@@ -126,6 +126,22 @@
     return false;
   }
 
+  function policyReachesGoal() {
+    const visited = new Set();
+    let x = 1, y = 6;
+    for (let i = 0; i < grid * grid; i++) {
+      const key = `${x},${y}`;
+      if (visited.has(key)) return false;
+      visited.add(key);
+      if (x === mouse.x && y === mouse.y) return true;
+      const { dx, dy } = actions[chooseBestAction(key)];
+      const nx = x + dx, ny = y + dy;
+      if (isOutside(nx, ny) || isWall(nx, ny)) return false;
+      x = nx; y = ny;
+    }
+    return false;
+  }
+
   function randomizeWalls() {
     const safe = new Set(['1,6','6,1','0,6','2,6','1,7','1,5','5,1','6,0','6,2','7,1']);
     walls.length = 0;
@@ -270,7 +286,7 @@
     document.getElementById("rl-epsilon").textContent     = epsilon.toFixed(2);
     document.getElementById("rl-success").textContent     = `${successRate.toFixed(0)}%`;
     document.getElementById("rl-avg-reward").textContent  = winRewards.length > 0 ? avgReward.toFixed(1) : "—";
-    document.getElementById("rl-policy").textContent      = successes >= 5 && successRate > 50 ? "learned" : "exploring";
+    document.getElementById("rl-policy").textContent      = policyReachesGoal() ? "learned" : "exploring";
   }
 
   function draw() {
