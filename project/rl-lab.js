@@ -16,12 +16,7 @@
           </div>
         </div>
 
-        <div class="rl-canvas-wrap">
-          <canvas id="rl-canvas" width="560" height="560"></canvas>
-          <div id="win-overlay" aria-hidden="true">
-            <img id="win-cat-img" src="" alt="" />
-          </div>
-        </div>
+        <canvas id="rl-canvas" width="560" height="560"></canvas>
 
         <div class="rl-controls">
             <button data-action="train-fast">Train</button>
@@ -483,16 +478,24 @@
   // ── win animation ────────────────────────────────────────────────────────
 
   const CAT_FRAMES = ['1','2','3','4'].map(n => `assets/cat/cat_${n}.png`);
-  // preload
   CAT_FRAMES.forEach(src => { const i = new Image(); i.src = src; });
 
-  function playWinAnimation() {
-    const overlay = mount.querySelector('#win-overlay');
-    const img     = mount.querySelector('#win-cat-img');
-    if (!overlay || !img) return;
+  // Body-level overlay so backdrop-filter on .rl-panel can't trap it
+  const winOverlay = document.createElement('div');
+  winOverlay.id = 'win-overlay';
+  winOverlay.setAttribute('aria-hidden', 'true');
+  const winCatImg = document.createElement('img');
+  winCatImg.id = 'win-cat-img';
+  winCatImg.alt = '';
+  winOverlay.appendChild(winCatImg);
+  document.body.appendChild(winOverlay);
 
-    const DURATION = 1400;
-    const CAT_W    = 140;
+  function playWinAnimation() {
+    const overlay = winOverlay;
+    const img     = winCatImg;
+
+    const DURATION = 1600;
+    const CAT_W    = 420;
     let frameIndex = 0;
     let startTs    = null;
 

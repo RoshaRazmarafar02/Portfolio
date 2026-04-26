@@ -1196,23 +1196,20 @@ html { background: var(--bg); }
 }
 
 /* ── Win animation overlay ─────────────────────────────────────────────── */
-.rl-canvas-wrap {
-  position: relative;
-}
 #win-overlay {
   position: fixed;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
   display: none;
-  z-index: 9000;
+  z-index: 99999;
 }
 #win-cat-img {
   position: absolute;
-  width: 140px;
+  width: 420px;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   top: 50%;
-  left: -140px;
+  left: -420px;
   transform: translateY(-50%);
 }
