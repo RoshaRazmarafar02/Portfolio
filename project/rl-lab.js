@@ -91,7 +91,8 @@
   const gamma  = 0.9;
   let running  = false;
   let timer    = null;
-  let winFlash = 0;
+  let winFlash  = 0;
+  let showPath  = false;
   let successes = 0;
   let totalReward = 0;
   let episodeReward = 0;
@@ -178,13 +179,14 @@
     if (shouldDraw) draw();
   }
 
-  function trainFast(episodesTarget = 100) {
+  function trainFast(episodesTarget = 25) {
     if (running) return;
     const target = episode + episodesTarget;
     while (episode < target) {
       LearningStep(false);
     }
     epsilon = 0.0;
+    showPath = true;
     resetCat();
     updateState();
     draw();
@@ -300,7 +302,7 @@
   }
 
   function drawPathHint() {
-    if (Object.keys(q).length === 0) return;
+    if (!showPath || Object.keys(q).length === 0) return;
 
     const visited = new Set();
     let x = 1, y = 6; // cat's reset position
@@ -360,7 +362,7 @@
   mount.querySelector('[data-action="train-fast"]').addEventListener("click", () => {
     clearInterval(timer);
     running = false;
-    trainFast(100);
+    trainFast(25);
   });
 
   mount.querySelector('[data-action="demo"]').addEventListener("click", () => {
@@ -373,9 +375,10 @@
     clearInterval(timer);
     running = false;
     for (const key in q) delete q[key];
-    episode = 0;
-    epsilon = 0.4;
+    episode  = 0;
+    epsilon  = 0.4;
     winFlash = 0;
+    showPath = false;
     resetCat();
     updateState();
     draw();
