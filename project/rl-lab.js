@@ -19,10 +19,10 @@
         <canvas id="rl-canvas" width="560" height="560"></canvas>
 
         <div class="rl-controls">
-          <button data-action="train">Train</button>
-          <button data-action="pause">Pause</button>
-          <button data-action="reset">Reset</button>
-          <button data-action="random">Randomize</button>
+            <button data-action="train-fast">Train Fast</button>
+            <button data-action="demo">Show Result</button>
+            <button data-action="reset">Reset</button>
+            <button data-action="step">Step</button>
         </div>
       </div>
 
@@ -66,8 +66,8 @@
   const actions = [
     {name: "up", dx: 0 , dy: -1},
     {name: "down", dx: 0, dy: 1},
-    {name: "right", dx:-1, dy: 0},
-    {name: "left", dx: 1, dy: 0},
+    {name: "left", dx:-1, dy: 0},
+    {name: "right", dx: 1, dy: 0},
   ];
 
   const q ={};
@@ -110,7 +110,7 @@
 
     const qValues = getQ(state);
     let best = 0;
-    for (let i = 1; i < qValues.lemgth; i++) {
+    for (let i = 1; i < qValues.length; i++) {
         if (qValues[i] > qValues[best]) best = i;
     }
     return best;
@@ -133,7 +133,7 @@
     cat.x = nx;
     cat.y = ny;
     
-    const reachedMouse = cat.x === mouse.x && cat.y == mouse.y;
+    const reachedMouse = cat.x === mouse.x && cat.y === mouse.y;
     return {
         next: {x: cat.x, y: cat.y},
         reward : reachedMouse ? 10 : -1,
@@ -141,8 +141,39 @@
     };
   }
 
+  function LearningStep(){
+    const state = stateKey(cat);
+    const actionIndex = chooseAction(state);
+    const result = takeAction(actionIndex);
+    const nextState = stateKey(result.next);
 
+    const currentQ = getQ(state);
+    const nextQ = getQ(nextState);
 
+    const oldValue = currentQ[actionIndex];
+    const bestNext = Math.max(...nextQ);
+    
+    const target = result.reward + gamma * bestNext;
+    const predictionError = target - oldValue;
+
+    currentQ[actionIndex] = oldValue + alpha * predictionError;
+    steps++;
+
+    if (result.done || steps >=80){
+        episode++;
+        epsilon = Math.max(0.05, epsilon * 0.985);
+        resetCat();
+    }
+
+    updateState();
+    draw();
+  }
+
+  function updateState(){
+    document.getElementById("rl-episode").textContent = episode.toString().padStart(3, "0");
+    document.getElementById("rl-steps").textContent = steps.toString().padStart(2, "0");
+    document.getElementById("rl-epsilon").textContent = epsilon.toFixed(2);
+  }
 
 
   function draw() {
@@ -185,6 +216,54 @@
     ctx.textBaseline = "middle";
     ctx.fillText(emoji, cx, cy);
   }
+
+
+    // ===== CONTROLS =====
+
+    const trainBtn = mount.querySelector('[data-action="train"]');
+    const pauseBtn = mount.querySelector('[data-action="pause"]');
+    const resetBtn = mount.querySelector('[data-action="reset"]');
+
+    trainBtn.addEventListener("click", () => {
+    if (running) return;
+
+    running = true;
+
+    timer = setInterval(() => {
+        LearningStep(); 
+    }, 120);
+    });
+
+    pauseBtn.addEventListener("click", () => {
+    running = false;
+    clearInterval(timer);
+    });
+
+    resetBtn.addEventListener("click", () => {
+    running = false;
+    clearInterval(timer);
+
+    for (const key in q) delete q[key];
+
+    episode = 0;
+    epsilon = 0.4;
+
+    resetCat();
+    updateState();
+    draw();
+    });
+
+    ctx.fillStyle = "rgba(25,229,223,0.06)";
+
+    for (let key in q) {
+    const [x, y] = key.split(',').map(Number);
+    const values = q[key];
+    const maxVal = Math.max(...values);
+
+    if (maxVal > 0) {
+        ctx.fillRect(x * cell, y * cell, cell, cell);
+    }
+    }
 
   draw();
 })();
