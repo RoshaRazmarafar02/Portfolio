@@ -1206,9 +1206,9 @@ html { background: var(--bg); }
 }
 #win-cat-img {
   position: absolute;
-  width: 1260px;
+  width: 945px;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   bottom: 28%;
-  left: -1260px;
+  left: -945px;
 }

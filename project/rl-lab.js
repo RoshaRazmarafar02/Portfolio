@@ -494,7 +494,7 @@
   document.body.appendChild(winOverlay);
 
   function playWinAnimation() {
-    const CAT_W        = 1260;
+    const CAT_W        = 945;
     const RUN_SPEED    = 800;   // px/s
     const RUN_MS       = 75;    // ms per run frame
     const CELEB_MS     = 110;   // ms per celebration frame
