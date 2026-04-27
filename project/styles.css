@@ -1209,7 +1209,6 @@ html { background: var(--bg); }
   width: 420px;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  top: 50%;
+  bottom: 28%;
   left: -420px;
-  transform: translateY(-50%);
 }

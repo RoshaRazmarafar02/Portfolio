@@ -478,10 +478,12 @@
 
   // ── win animation ────────────────────────────────────────────────────────
 
-  const CAT_FRAMES = ['1','2','3','4'].map(n => `assets/cat/cat_${n}.png`);
-  CAT_FRAMES.forEach(src => { const i = new Image(); i.src = src; });
+  const RUN_FRAMES   = ['1','2','3','4'].map(n => `assets/cat/${n}.png`);
+  const CELEB_FRAMES = ['5_1','5_2','5_3','5_2','5_1'].map(n => `assets/cat/${n}.png`);
+  [...RUN_FRAMES, ...['assets/cat/5_1.png','assets/cat/5_2.png','assets/cat/5_3.png']]
+    .forEach(src => { const i = new Image(); i.src = src; });
 
-  // Body-level overlay so backdrop-filter on .rl-panel can't trap it
+  // Body-level overlay — escapes backdrop-filter containing blocks
   const winOverlay = document.createElement('div');
   winOverlay.id = 'win-overlay';
   winOverlay.setAttribute('aria-hidden', 'true');
@@ -492,37 +494,71 @@
   document.body.appendChild(winOverlay);
 
   function playWinAnimation() {
-    const overlay = winOverlay;
-    const img     = winCatImg;
+    const CAT_W        = 420;
+    const RUN_SPEED    = 800;   // px/s
+    const RUN_MS       = 75;    // ms per run frame
+    const CELEB_MS     = 110;   // ms per celebration frame
+    const midX         = window.innerWidth / 2 - CAT_W / 2;
+    const exitX        = window.innerWidth + 20;
 
-    const DURATION = 1600;
-    const CAT_W    = 420;
-    let frameIndex = 0;
-    let startTs    = null;
+    let phase      = 'run-in';
+    let runFrame   = 0;
+    let celebFrame = 0;
+    let x          = -CAT_W;
+    let lastTs     = null;
+    let lastRunT   = 0;
+    let lastCelebT = 0;
 
-    img.src = CAT_FRAMES[0];
-    overlay.style.display = 'block';
-
-    const frameTimer = setInterval(() => {
-      frameIndex = (frameIndex + 1) % CAT_FRAMES.length;
-      img.src = CAT_FRAMES[frameIndex];
-    }, 75);
-
-    const canvasW = window.innerWidth;
+    winCatImg.src = RUN_FRAMES[0];
+    winOverlay.style.display = 'block';
 
     function step(ts) {
-      if (!startTs) startTs = ts;
-      const p = Math.min((ts - startTs) / DURATION, 1);
-      const x = -CAT_W + (canvasW + CAT_W * 2) * p;
-      const bounce = -6 * Math.abs(Math.sin(p * Math.PI * 5));
-      img.style.left = x + 'px';
-      img.style.top  = `calc(50% + ${bounce.toFixed(1)}px)`;
-      if (p < 1) {
-        requestAnimationFrame(step);
+      if (!lastTs) { lastTs = ts; lastRunT = ts; lastCelebT = ts; }
+      const dt = ts - lastTs;
+      lastTs = ts;
+
+      if (phase === 'run-in') {
+        x += RUN_SPEED * dt / 1000;
+        if (ts - lastRunT > RUN_MS) {
+          runFrame = (runFrame + 1) % RUN_FRAMES.length;
+          winCatImg.src = RUN_FRAMES[runFrame];
+          lastRunT = ts;
+        }
+        if (x >= midX) {
+          x = midX;
+          phase = 'celebrate';
+          celebFrame = 0;
+          winCatImg.src = CELEB_FRAMES[0];
+          lastCelebT = ts;
+        }
+      } else if (phase === 'celebrate') {
+        if (ts - lastCelebT > CELEB_MS) {
+          celebFrame++;
+          if (celebFrame >= CELEB_FRAMES.length) {
+            phase = 'run-out';
+            runFrame = 0;
+            winCatImg.src = RUN_FRAMES[0];
+            lastRunT = ts;
+          } else {
+            winCatImg.src = CELEB_FRAMES[celebFrame];
+            lastCelebT = ts;
+          }
+        }
       } else {
-        clearInterval(frameTimer);
-        overlay.style.display = 'none';
+        x += RUN_SPEED * dt / 1000;
+        if (ts - lastRunT > RUN_MS) {
+          runFrame = (runFrame + 1) % RUN_FRAMES.length;
+          winCatImg.src = RUN_FRAMES[runFrame];
+          lastRunT = ts;
+        }
+        if (x > exitX) {
+          winOverlay.style.display = 'none';
+          return;
+        }
       }
+
+      winCatImg.style.left = x + 'px';
+      requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
   }
