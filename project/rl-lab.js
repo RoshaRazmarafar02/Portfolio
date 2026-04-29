@@ -408,7 +408,7 @@
     }
 
     drawToken(mouse.x, mouse.y, targetImg, "rgba(25,229,223,0.18)");
-    drawToken(cat.x,   cat.y,   agentImg,  "rgba(235,71,210,0.20)", -6);
+    drawToken(cat.x,   cat.y,   agentImg,  "rgba(235,71,210,0.20)", 6);
   }
 
   function drawToken(x, y, img, glow, yOffset = 0) {
