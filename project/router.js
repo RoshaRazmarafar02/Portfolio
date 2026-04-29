@@ -9,30 +9,34 @@
       title: 'Real-Time Air Pollution Monitoring via WSN Simulation',
       year: '2024',
       tags: ['Distributed Systems', 'Simulation', 'Networks'],
+      repo: 'https://github.com/RoshaRazmarafar02/Real-Time-Air-Monitoring-System',
       summary: [
-        'End-to-end real-time air pollution monitoring system built on a large-scale wireless sensor network simulation.',
-        'Distributed sensor nodes are organized via hierarchical clustering using the LEACH protocol for efficient aggregation and transmission. A multi-layer architecture integrates simulation, data processing, a centralized database, and a web dashboard for live monitoring.',
+        'RAPM is a demonstration of two complementary architectural patterns applied together.',
+        'N-tier (3-layer) Web Architecture — the web application strictly separates Presentation, Business Logic, and Data Access into independent deployable layers, following the standard N-tier pattern used in enterprise web application development.',
+        'LEACH-inspired WSN Distributed Architecture — the data collection layer is modelled on the LEACH (Low-Energy Adaptive Clustering Hierarchy) protocol, a well-established distributed clustering algorithm for wireless sensor networks. Sensor nodes report to elected Cluster Head (CH) nodes, which aggregate readings and forward them to a centralised Sink Node — mirroring how a real-world WSN would route data through a multi-hop hierarchy before persisting it.',
+        'The primary goal of the project is to demonstrate the integration of these two architectural paradigms: a distributed, concurrent sensor network feeding into a structured, layered web platform. The AQI data used in the simulation is synthetically generated for demonstration purposes and is designed to be replaceable with readings from physical sensors with no change to the upstream architecture.',
       ],
       meta: {
         Role: 'Sole engineer',
-        Stack: 'OMNET++ · Python · Web',
+        Stack: 'C# · ASP.NET 4.8.1 · WebForms · MVC 5 · SQL Server · MailKit',
         Domain: 'WSN · IoT · Env. sensing',
         Status: 'Shipped',
         Scope: 'Architecture → implementation',
       },
     },
     {
-      title: 'Centralized Cybersecurity Attack Platform (CCAP)',
+      title: 'Phishing Security Awareness Platform',
       year: '2023',
-      tags: ['Security', 'Systems', 'Network'],
+      tags: ['Security', 'Systems', 'ASP.NET MVC'],
+      repo: 'https://github.com/RoshaRazmarafar02/PhishingEmail',
       summary: [
-        'Sandboxed platform for simulating cybersecurity attacks — including Remote Code Execution and network-level adversarial behaviors.',
-        'Integrates ASP.NET MVC with Windows Services and ARP-based scanning to model, execute and analyze adversarial scenarios in a controlled lab environment.',
+        'ASP.NET MVC 5 web application for conducting controlled phishing security awareness campaigns. Administrators create HTML email templates, manage target user lists, and dispatch tracked emails via SMTP — each recipient receives a unique token that ties their interactions back to the campaign.',
+        'Interaction events (link open, credential submission) are captured by simulated phishing landing pages modelled on Google, Netflix, and Mubis login flows, then surfaced in a live analytics dashboard showing sent / visited / submitted rates per campaign and per site.',
       ],
       meta: {
         Role: 'Designer · Engineer',
-        Stack: 'C# · ASP.NET MVC · Windows Services',
-        Domain: 'Offensive security · systems',
+        Stack: 'C# · ASP.NET MVC 5 · Entity Framework 6 · SQL Server · MailKit',
+        Domain: 'Offensive security · awareness training',
         Status: 'Research prototype',
       },
     },
@@ -40,28 +44,17 @@
       title: 'MathWorks Minidrone Competition',
       year: '2024',
       tags: ['Control', 'MATLAB', 'Robotics'],
+      repo: 'https://github.com/RoshaRazmarafar02/MathworksMiniDroneCompetition-BigO1-2024',
       summary: [
-        '1st place finish in the 2024 edition after placing 4th in 2023. Model-based design of a line-following controller implemented on Parrot Minidrone hardware.',
-        'Simulink-based perception → control → actuation pipeline with real-time constraints.',
+        '1st place nationally in 2024, after 4th in 2023. The challenge: design a controller that autonomously flies a Parrot Mambo Minidrone along a marked track, executes turns, and lands on a designated circle — using only onboard sensors and a downward camera. No external positioning allowed.',
+        'We developed the Equilibrium Algorithmic Framework, an approach that tightly integrates image processing, yaw-based control, and a Stateflow path planner. The core insight was treating the camera frame as a matrix and applying morphological erosion and structured submatrices to extract path direction, turn cues, and circle detection signals simultaneously — rather than solving them sequentially.',
+        'Three algorithm generations were built and hardware-tested. The final version uses seven symmetric submatrices for line following, a dual-blob-analysis pipeline for circle detection, and a four-state Stateflow machine (hover → move → yaw → land) that reads directly from image processing flags. The controller was compiled via Embedded Coder and deployed directly to the drone — progressing from 16% track completion in early flights to consistent 100% across ten hardware sessions.',
       ],
       meta: {
-        Role: 'Team lead',
-        Stack: 'MATLAB · Simulink · Parrot SDK',
-        Domain: 'Control · real-time',
-        Result: '1st place · 2024',
-      },
-    },
-    {
-      title: 'Project placeholder',
-      year: '—',
-      tags: ['To add'],
-      summary: [
-        'Reserved slot — a new project entry will live here. The dropdown structure is ready; content will be filled in later.',
-      ],
-      meta: {
-        Role: '—',
-        Stack: '—',
-        Status: 'To be added',
+        Role: 'Co-designer · Engineer',
+        Stack: 'MATLAB · Simulink · Stateflow · Embedded Coder · Parrot SDK',
+        Domain: 'Autonomous control · computer vision · model-based design',
+        Result: '1st place · 2024 · National',
       },
     },
   ];
@@ -90,15 +83,12 @@
             <div class="proj-body-inner">
               <div class="proj-copy">
                 ${p.summary.map(s => `<p>${s}</p>`).join('')}
+                ${p.repo ? `<a class="proj-read-more" href="${p.repo}" target="_blank" rel="noopener">Read more &rarr;</a>` : ''}
               </div>
               <div class="proj-meta-grid">
                 <dl>
                   ${Object.entries(p.meta).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}
                 </dl>
-              </div>
-              <div class="proj-figure">
-                <div class="stripe-bg"></div>
-                <div class="placeholder-label">fig / diagram — to be added</div>
               </div>
             </div>
           </div>

@@ -661,6 +661,18 @@ html { background: var(--bg); }
   color: var(--ink-dim);
 }
 .proj-copy p + p { margin-top: 14px; }
+.proj-read-more {
+  display: inline-block;
+  margin-top: 20px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal);
+  text-decoration: none;
+  transition: opacity .2s;
+}
+.proj-read-more:hover { opacity: 0.7; }
 .proj-meta-grid {
   font-family: var(--mono);
   font-size: 11px;
@@ -773,6 +785,32 @@ html { background: var(--bg); }
   text-transform: uppercase;
 }
 .research-side .label { color: var(--ink); text-transform: none; font-size: 12px; letter-spacing: 0.02em; font-family: var(--display); }
+.abstract-wrap { margin-top: 16px; }
+.abstract-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--teal);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.abstract-toggle:hover { background: rgba(255,255,255,0.04); }
+.abstract-toggle-icon { transition: transform .3s; flex-shrink: 0; }
+.abstract-wrap.open .abstract-toggle-icon { transform: rotate(45deg); }
+.abstract-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .4s ease;
+}
+.abstract-wrap.open .abstract-body { max-height: 800px; }
+.abstract-body p { margin-top: 16px; }
 
 /* ======== Education ======== */
 .edu-wrap {
