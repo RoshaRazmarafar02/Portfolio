@@ -63,6 +63,13 @@
   const canvas = document.getElementById("rl-canvas");
   const ctx = canvas.getContext("2d");
 
+  const agentImg  = new Image();
+  const targetImg = new Image();
+  let _assetsReady = 0;
+  agentImg.onload = targetImg.onload = () => { if (++_assetsReady === 2) draw(); };
+  agentImg.src  = 'assets/cat/agent.png';
+  targetImg.src = 'assets/cat/target.png';
+
   const grid = 8;
   const cell = canvas.width / grid;
 
@@ -400,11 +407,11 @@
       winFlash--;
     }
 
-    drawToken(mouse.x, mouse.y, "🐭", "rgba(25,229,223,0.18)");
-    drawToken(cat.x,   cat.y,   "🐈", "rgba(235,71,210,0.20)");
+    drawToken(mouse.x, mouse.y, targetImg, "rgba(25,229,223,0.18)");
+    drawToken(cat.x,   cat.y,   agentImg,  "rgba(235,71,210,0.20)");
   }
 
-  function drawToken(x, y, emoji, glow) {
+  function drawToken(x, y, img, glow) {
     const cx = x * cell + cell / 2;
     const cy = y * cell + cell / 2;
     const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, cell * 0.7);
@@ -414,10 +421,8 @@
     ctx.beginPath();
     ctx.arc(cx, cy, cell * 0.62, 0, Math.PI * 2);
     ctx.fill();
-    ctx.font = `${cell * 0.48}px system-ui`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(emoji, cx, cy);
+    const size = cell * 0.72;
+    ctx.drawImage(img, cx - size / 2, cy - size / 2, size, size);
   }
 
   function drawPathHint() {
