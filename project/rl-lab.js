@@ -407,22 +407,22 @@
       winFlash--;
     }
 
-    drawToken(mouse.x, mouse.y, targetImg, "rgba(25,229,223,0.18)");
-    drawToken(cat.x,   cat.y,   agentImg,  "rgba(235,71,210,0.20)", 6);
+    drawToken(mouse.x, mouse.y, targetImg, "rgba(25,229,223,0.18)", 0,  1.5);
+    drawToken(cat.x,   cat.y,   agentImg,  "rgba(235,71,210,0.20)", 6,  2.0);
   }
 
-  function drawToken(x, y, img, glow, yOffset = 0) {
+  function drawToken(x, y, img, glow, yOffset = 0, sizeScale = 1) {
     const cx = x * cell + cell / 2;
     const cy = y * cell + cell / 2 + yOffset;
-    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, cell * 0.7);
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, cell * 0.7 * sizeScale);
     grad.addColorStop(0, glow);
     grad.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = grad;
     ctx.beginPath();
-    ctx.arc(cx, cy, cell * 0.62, 0, Math.PI * 2);
+    ctx.arc(cx, cy, cell * 0.62 * sizeScale, 0, Math.PI * 2);
     ctx.fill();
 
-    const size = cell * 0.72;
+    const size = cell * 0.72 * sizeScale;
     const dx = cx - size / 2;
     const dy = cy - size / 2;
 
