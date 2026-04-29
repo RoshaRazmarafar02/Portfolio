@@ -421,8 +421,26 @@
     ctx.beginPath();
     ctx.arc(cx, cy, cell * 0.62, 0, Math.PI * 2);
     ctx.fill();
+
     const size = cell * 0.72;
-    ctx.drawImage(img, cx - size / 2, cy - size / 2, size, size);
+    const dx = cx - size / 2;
+    const dy = cy - size / 2;
+
+    // Square clip mask — cover-fit (crop sides/top to fill the square)
+    const iw = img.naturalWidth  || size;
+    const ih = img.naturalHeight || size;
+    const scale = Math.max(size / iw, size / ih);
+    const sw = size / scale;
+    const sh = size / scale;
+    const sx = (iw - sw) / 2;
+    const sy = (ih - sh) / 2;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(dx, dy, size, size);
+    ctx.clip();
+    ctx.drawImage(img, sx, sy, sw, sh, dx, dy, size, size);
+    ctx.restore();
   }
 
   function drawPathHint() {
