@@ -408,12 +408,12 @@
     }
 
     drawToken(mouse.x, mouse.y, targetImg, "rgba(25,229,223,0.18)");
-    drawToken(cat.x,   cat.y,   agentImg,  "rgba(235,71,210,0.20)");
+    drawToken(cat.x,   cat.y,   agentImg,  "rgba(235,71,210,0.20)", -6);
   }
 
-  function drawToken(x, y, img, glow) {
+  function drawToken(x, y, img, glow, yOffset = 0) {
     const cx = x * cell + cell / 2;
-    const cy = y * cell + cell / 2;
+    const cy = y * cell + cell / 2 + yOffset;
     const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, cell * 0.7);
     grad.addColorStop(0, glow);
     grad.addColorStop(1, "rgba(0,0,0,0)");
